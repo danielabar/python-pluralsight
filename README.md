@@ -6,6 +6,9 @@
     - [Getting Started With Python 3](#markdown-header-getting-started-with-python-3)
         - [Scalar Types](#markdown-header-scalar-types)
         - [Relational Operators](#markdown-header-relational-operators)
+        - [Conditional Statements](#markdown-header-conditional-statements)
+        - [While Loops](#markdown-header-while-loops)
+    - [Strings and Collections](#markdown-header-strings-and-collections)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -67,3 +70,57 @@ Two objects are _equivalent_ if one could be used in place of the other.
 `<=` less than or equal to
 
 `>=` greater than or equal to
+
+### Conditional Statements
+
+```python
+if expr:
+  print("expr is True")
+```
+
+`expr` is converted to bool as if by the `bool()` constructor. So this evaluates to `True`
+
+```python
+if "eggs":
+  print("Yes please!")
+```
+
+Optional else clause:
+
+```python
+h = 42
+if h > 50:
+  print("Greater than 50")
+else:
+  print("Less than 50")
+```
+
+Rather than nesting an `if` block in an `else` block, use `elif` keyword, because "zen of python" - "flat is better than nested"
+
+### While Loops
+
+`while` statment terminated by a colon because it introduces a new block. `expr` is converted to `bool` as if by the `bool()` constructor.
+
+```python
+while expr:
+  print("loop while expr is True")
+```
+
+```python
+c = 5
+# equivalent would be: while c:, but more idiomatic python to be explicit as below:
+while c != 0:
+  print(c)
+  c -= 1
+```
+
+`break` keyword terminates innermost loop and transfers execution to the first statement after the loop.
+
+```python
+while True:
+  if expr:
+    break
+print("Go here on break")
+```
+
+## Strings and Collections
