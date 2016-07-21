@@ -298,3 +298,7 @@ crimson 14423100
 ### Putting it All Together
 
 [Example](code/strings-and-collections.py)
+
+## Modularity
+
+### Creating, Running, and Importing a Module
