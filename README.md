@@ -26,6 +26,11 @@
         - [Documenting With Comments](#markdown-header-documenting-with-comments)
         - [The Whole Shebang](#markdown-header-the-whole-shebang)
     - [Objects](#markdown-header-objects)
+        - [Argument Passing](#markdown-header-argument-passing)
+        - [Function Arguments in Detail](#markdown-header-function-arguments-in-detail)
+        - [Python's Type System](#markdown-header-pythons-type-system)
+        - [Variable Scoping](#markdown-header-variable-scoping)
+        - [Everything is an object](#markdown-header-everything-is-an-object)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -462,3 +467,155 @@ if __name__ == '__main__':
 To allow program to be run as a shell script, add at beginning of file, the shebang line which tells the OS which interpreter to use to run the program -  `#!/usr/bin/env python`
 
 ## Objects
+
+Objects are immutable, for example, `a = 500`, then `a = 1000`, a now pointing to a new int object 1000, and if no live references left pointing to the int 500 object, the garbage collector will reclaim it eventually.
+
+`is` operator `a is b` tests if two variables are referencing the same object. Can also compare `a is None`.
+
+Assignment operator only binds to names, never copies an object by value.
+
+Python doesn't really have variables, only named references to objects. References behave like labels which support retrieving objects.
+
+__Value equality vs. identity__ - "Value" refers to equivalent _contents_, whereas "Identity" refers to same object.
+
+Value comparison can be controlled programmatically.
+
+### Argument Passing
+
+When an object reference is passed to a function, if the function modifies the object, that change will be seen outside the function:
+
+```python
+m = [1, 2, 3]
+def modify(k):
+  k.append(4)
+
+modify(m)
+# m is now ]1, 2, 3, 4]
+```
+
+To avoid side effects, the function must be responsible for making a _copy_ of the object, and operate on the copy.
+
+Function objects are _passed by object reference_. The value of the _reference_ is copied, not the value of the _object_. No objects are copied.
+
+The return statement also uses pass by object reference.
+
+### Function Arguments in Detail
+
+__Default Arguments__ - `def function(a, b=value)`, "value" is default value for "b".
+
+[Exampe](code/default-argument.py)
+
+Parameters with default arguments must come after those without.
+
+```python
+def banner(message, border='-'):
+    line = border * len(message)
+    print(line)
+    print(message)
+    print(line)
+```
+
+Message string is a _positional argument_, border string is a _keyword argument_.
+
+Positional arguments are matched in sequence with formal arguments, whereas keyword arguments are matched by name.
+
+This can be called as follows:
+
+* `banner("foo")`
+* `banner("foo", "*")`
+* `banner("foo", border="*")`
+
+__Default Argument Evaluation__ - Default argument values are evaluated when `def` is evaluated. But they can be modified like any other object.
+
+Always use immutable objects for default values, otherwise get surprising results, for example `None` rather than `[]`:
+
+```python
+def add_spam(menu=None):
+    if menu is None:
+        menu = []
+    menu.append('spam')
+    return menu
+```
+
+### Python's Type System
+
+Is both _dynamic_ and _strong_.
+
+__Dynamic type system__ - type of an oject reference isn't resolved until the program is running and doesn't need to specified up front when the program is written.
+
+For example, this function to add two objects doesn't specify what type they are. It can be called with any type for which addition operator is defined such as int, float, strings. The arguments `a` and `b` can reference any type of object.
+
+```python
+def add(a, b):
+  return a + b
+
+add(5, 7) # 12
+add(3.1, 2.4) # 5.5
+add("news", "paper")  # 'newspaper'
+add([1, 6], [21, 107])  # [1, 6, 21, 107]
+```
+
+__Strong type system__ - language will not implicitly convert objects between types. For example, attempt to add types for which addition is not defined, such as string and int:
+
+```python
+add("The answer is", 42)  # TypeError: Can't convert 'int' object to str implicitly
+```
+
+### Variable Scoping
+
+Object references have no type. Variables are just untyped name bindings to objects. They can be rebound/re-assigned to objects of different types. But where is that binding stored?
+
+__Python Name Scopes__ - Scopes are _contexts_ in which named references can be looked up. Four scopes from narrowest to broadest:
+
+* Local - those names defined inside the current function.
+* Enclosing - those names defined inside any and all enclosing functions.
+* Global - those names defined in the top-level of a module, each module brings with it a new global scope.
+* Built-in - those names provided by the Python language through "builtins" module.
+
+Names are looked up in the narrowest relevant context (L, E, G, B).
+
+Note: Scopes do not correspond to source code blocks as demarcated by indentation. For loops, if blocks etc. DO NOT introduce new nested scopes.
+
+For example, [words-cli.py](code/words_cli.py) contains global names:
+
+* `main` bound by `def main(url)` statement
+* `sys` bound when sys is imported
+* `__name__` provided by the Python runtime
+* `urlopen` bound from `urllib.request` module
+* `fetch_words` bound by `def fetch_words(url)` statement
+* `print_items` bound by `def print_items(items)` statement
+
+Module scope name bindings are usually introduced by import statements and function or class definitions.
+
+Within `fetch_words` function, local-scope names include:
+
+* `word` bound by inner for loop
+* `line_words` bound by assignment
+* `url` bound by formal argument
+* `line` bound by outer for loop
+* `story_words` bound by Assignment
+* `story` bound by with statement
+
+Local names is brought into existence at first use and continues to live within function scope until function completes, then references are destroyed.
+
+Occasionally need to rebind a global name at module scope, as this simple module demonstrates:
+
+```python
+"""Demonstrate scoping."""
+
+count = 0 # global within this module
+
+def show_count():
+  print("count = ", count) # this looks up count in first local scope, not found so goes up to global scope
+
+def set_count(c):
+  #count = c  # count here is a local variable that shadows the global, not what was intended
+
+  # this modifies the actual global
+  global count
+  count = c
+```
+
+### Everything is an object
+
+Including functions and modules.
