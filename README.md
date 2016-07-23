@@ -14,7 +14,12 @@
         - [Lists](#markdown-header-lists)
         - [Dictionaries](#markdown-header-dictionaries)
         - [For Loops](#markdown-header-for-loops)
-        - [Putting it All Together](#markdown-header-putting-it-all-together)
+        - [Putting it all together](#markdown-header-putting-it-all-together)
+    - [Modularity](#markdown-header-modularity)
+        - [Creating, Running, and Importing a Module](#markdown-header-creating-running-and-importing-a-module)
+        - [Defining Functions and Returning Values](#markdown-header-defining-functions-and-returning-values)
+        - [Distinguishing Between Module Import and Module Execution](#markdown-header-distinguishing-between-module-import-and-module-execution)
+        - [The Python Execution Model](#markdown-header-the-python-execution-model)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -295,10 +300,81 @@ coral 16744272
 crimson 14423100
 ```
 
-### Putting it All Together
+### Putting it all together
 
 [Example](code/strings-and-collections.py)
 
 ## Modularity
 
 ### Creating, Running, and Importing a Module
+
+Module like [words.py](code/words.py) can be imported into the REPL, omit the file extension:
+
+```python
+>>> import words
+... program output...
+```
+
+When importing a module, code in it is executed immediately. To have more control over when code is executed and reuse, move code into a function.
+
+### Defining Functions and Returning Values
+
+Functions are defined with `def` keyword, followed by function name, and arguments in parenthesis.
+
+```python
+def square(x):
+  return x * x
+
+// invoke square
+square(5)  // 25
+```
+
+Functions don't need to return a value and can produce side effects. Can return early from a function by using `return` keyword with no parameter.
+
+### Distinguishing Between Module Import and Module Execution
+
+When all the code in the module is organized into functions, then importing it will not execute anything right away (besides just defining the functions):
+
+```python
+>>> import words
+>>> words.fetch_words()
+```
+
+Can also import just a specific function:
+
+```python
+>>> from words import fetch_words()
+>>> fetch_words()
+```
+
+Notice that running the module now from OS cli `python words.py` will not do anything, because all executing it now does is define a function then immediately exit.
+
+To make a module with useful functions AND which can be run as a script, need to use _special attributes_, which are delimited by __double underscores__.
+
+`__name__` - evalutes to `__main__` or the actual module name depending on how the enclosing module is being used. Used to detect whether module is being run as a script or being imported into another module or the REPL.
+
+[Example](code/words_special.py)
+
+For example, add `print(__name__)` as last line in module, then when imported into the REPL, will print out the module name, for example "words-special".
+
+Note if module is imported a second time in the same session, print statement will NOT run again, because module code is only executed once on first import (singleton?).
+
+Now running the script at OS cli `python words_special.py` outputs `__main__`.
+
+Module can use this behaviour to detect how its being used.
+
+### The Python Execution Model
+
+`def <some_function>()` is not a declaration, its a statement that when used in sequence with top level module scope code, causes the code within the function to be bound to the name of the function.
+
+When modules are imported or run, all of the top level statements are run, this is how functions within the module namespace are defined.
+
+By `.py` file is a Python module. But modules can be written for convenience import, convenience execution, or using the `if __name__ == '__main__'` idiom, both import and execution.
+
+__Python module__ - Conveninet import with API.
+
+__Python script__ - Conveninet execution from command line.
+
+__Python program__ - Possibly composed of many modules.
+
+Recommand making even simple scripts importable.
