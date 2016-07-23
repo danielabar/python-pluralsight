@@ -619,3 +619,11 @@ def set_count(c):
 ### Everything is an object
 
 Including functions and modules.
+
+`import words` binds the "words" module to the name "words" in the current namespace.
+
+Built-in `type` function can be used to determine the type of any object, for example `type(words)` returns `<class 'module'>`.
+
+Built-in `dir` function returns the attributes (introspect) of an object, `dir(words)` to list all functions in the module, anything imported, and special system functions denoted by double underscores.
+
+Can use `type` function on any attribute to learn more about it, `type(words.fetch_words)` returns `<class 'function'>`.
