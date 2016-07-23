@@ -20,6 +20,12 @@
         - [Defining Functions and Returning Values](#markdown-header-defining-functions-and-returning-values)
         - [Distinguishing Between Module Import and Module Execution](#markdown-header-distinguishing-between-module-import-and-module-execution)
         - [The Python Execution Model](#markdown-header-the-python-execution-model)
+        - [Main Functions and Command Line Arguments](#markdown-header-main-functions-and-command-line-arguments)
+        - [Sparse is better than Dense](#markdown-header-sparse-is-better-than-dense)
+        - [Documenting Using Docstrings](#markdown-header-documenting-using-docstrings)
+        - [Documenting With Comments](#markdown-header-documenting-with-comments)
+        - [The Whole Shebang](#markdown-header-the-whole-shebang)
+    - [Objects](#markdown-header-objects)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -377,4 +383,82 @@ __Python script__ - Conveninet execution from command line.
 
 __Python program__ - Possibly composed of many modules.
 
-Recommand making even simple scripts importable.
+Recommend making even simple scripts importable, to make development and testing easier.
+
+### Main Functions and Command Line Arguments
+
+[Example](code/words_cli.py)
+
+This refactor supports testing the individual functions and all together from the REPL. Note multiple functions can be imported from a module with a single import statement:
+
+```python
+>>> from words_cli import (fetch_words, print_items)
+>>> print_items(fetch_words())
+```
+
+Can also import _everything_ from a module, but not generally recommended because you can't control what gets imported, which can cause namespace collisions:
+
+```python
+>>> from words_cli import *
+>>> fetch_words()
+```
+
+To accept command line arguments, use the `argv` attribute of the `sys` module, which is a list of strings:
+
+```python
+import sys
+...
+
+def main():
+  url = sys.argv[1]
+  words = fetch_words(url)
+  print_items(words)
+```
+
+Issue with above is `main()` can no longer be tested from REPL because `sys.argv[1]` does not have a useful value in that environment.
+
+Solution is to have `url` be a parameter to the `main` function, and pass in `sys.argv[1]` from the __main__ check.
+
+More sophisticated cli parsing: `argparse`, also third party options such as `docopt`.
+
+### Sparse is better than Dense
+
+Top level functions have 2 blank lines between them. This is a convention for modern Python. (PEP 8 recommendation).
+
+### Documenting Using Docstrings
+
+API documentation in Python uses _docstrings_. Literal strings which occur as the first statement in a named block such as a function or module.
+
+Use triple quoted strings even for a single line because it can easily be expanded to add more details later.
+Recommend using Google's Python Style Guide, it can be machine parsed to generate html api docs, but still human readable.
+
+Begin with short description of function, followed by list of arguments to function, and the return value.
+
+After docstring is added, can access it via `help` in REPL:
+
+```python
+>>> from words-cli import fetch_words
+>>> help(fetch_words)
+```
+
+Module docstrings are placed at the beginning of the module, before any statements. Then can request help on the module as a whole:
+
+```python
+>>> import words_cli
+>>> help(words_cli)
+```
+
+### Documenting With Comments
+
+Generally recommended to use docstrings, which explain how to _consume_ your code. And code should be clean enough not to require additional explanation of how it works, but sometimes this is needed. For example:
+
+```python
+if __name__ == '__main__':
+    main(sys.argv[1]) # The 0th arg is the module filename
+```
+
+### The Whole Shebang
+
+To allow program to be run as a shell script, add at beginning of file, the shebang line which tells the OS which interpreter to use to run the program -  `#!/usr/bin/env python`
+
+## Objects
