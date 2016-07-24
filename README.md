@@ -31,6 +31,10 @@
         - [Python's Type System](#markdown-header-pythons-type-system)
         - [Variable Scoping](#markdown-header-variable-scoping)
         - [Everything is an object](#markdown-header-everything-is-an-object)
+    - [Collections](#markdown-header-collections)
+        - [Tuple](#markdown-header-tuple)
+        - [String](#markdown-header-string)
+        - [Range](#markdown-header-range)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -627,3 +631,184 @@ Built-in `type` function can be used to determine the type of any object, for ex
 Built-in `dir` function returns the attributes (introspect) of an object, `dir(words)` to list all functions in the module, anything imported, and special system functions denoted by double underscores.
 
 Can use `type` function on any attribute to learn more about it, `type(words.fetch_words)` returns `<class 'function'>`.
+
+## Collections
+
+### Tuple
+
+Immutable sequences of arbitrary objects. Once created, the objects within them cannot be replaced or removed, and new elements cannot be added.
+
+Similar syntax to lists, except they are delimited by parenthesis rather than square brackets.
+
+```python
+# assignment
+t = ("Norway", 4.953, 3)
+
+# access
+t[0]  # 'Norway'
+
+# built-in len function to get size of tuple
+len(t)  # 3
+
+# tuples are iteratable
+for item in t:
+  print(item) # Norway 4.953 3
+
+# can be concatenated
+t + (338.0, 265e9)  # ('Norway', 4.953, 3, 338.0, 265000000000.0)
+
+# repeat with multiplication Operators
+t * 3 # ('Norway', 4.953, 3, 'Norway', 4.953, 3, 'Norway', 4.953, 3)
+
+# can be nested (because tuples can contain any object, including another tuple)
+a = ((220, 284), (1184, 1210), (2620, 2924), (5020, 5564))
+
+# repeated application of index operator to get to inner element
+a[2][1] # 2924
+```
+
+If you need a single element tuple, cannot use `h = (391)`, will be parsed as integer with parenthesis for order of operations.
+Instead, use trailing comma separator `k = (391,)`
+
+To specify an empty tuple `e = ()`.
+
+Often times parenthesis can be ommitted. Useful for [functions that return multiple values](code/tuple_example.py).
+
+Returning multiple values in tuples is often used together with _destructuring_ (aka tuple unpacking), unpack data structures into named references:
+
+```python
+>>> lower, upper = minmax([83, 33, 84, 32, 85, 31, 86])
+>>> lower # 31
+>>> upper # 86
+```
+
+Tuple unpacking works with arbitrarily bested tuples:
+
+```python
+>>> (a, (b, (c, d))) = (4, (3, (2, 1)))
+>>> a # 4
+>>> b # 3
+>>> c # 2
+>>> D # 1
+```
+
+Python idiom for swapping two or more variables:
+
+```python
+>>> a = 'jelly'
+>>> b = 'bean'
+>>> a, b = b, a
+>>> a # 'bean'
+>>> b # 'jelly'
+```
+
+To create a tuple from an exising collection object such as list, use constructor `tuple(iterable)`
+
+`in` operator to test for containment
+
+```python
+>>> 5 in (3, 5, 17)
+>>> True
+>>> 5 not in (3, 5, 17)
+>>> False
+```
+
+### String
+
+`str` is a homogenous immutable sequence of Unicode codepoints (roughly equivalent to characters).
+
+Built in `len` function to determine length of string.
+
+Concatenation via `+` operator and `+=`.
+
+For joining large numbers of strings, `join` method is more memory efficient than concatenation, it's called on the separator string.
+Can also `split`, passing in separator string as argument:
+
+```python
+>>> colors = ';'.join(['#45ff23', '#2321fa', '#1298a3'])
+>>> colors # '#45ff23;#2321fa;#1298a3'
+colors.split(';') # ['#45ff23', '#2321fa', '#1298a3']
+```
+
+Python idiom for concatenating a collection of strings is to join using the empty separator:
+
+```python
+''.join(['high', 'way', 'man']) # 'highwayman'
+```
+
+`partition` divides a string into three sections around a separator: prefix, separator, suffix, returning these in a tuple.
+
+```python
+>>> "unforgetable".partition("forget") # ('un', 'forget', 'able')
+```
+
+Commonly used with tuple unpacking:
+
+```python
+>>> departure, separator, arrival = "London:Edinburgh".partition(':')
+>>> departure # 'London'
+>>> separator # ':'
+>>> arrival # 'Edinburgh'
+```
+
+Often not interested in separator, Python convention is to use underscore:
+
+```python
+>>> origin, _, destination = "Seattle-Boston".partition('-')
+>>> origin # 'Seattle'
+>>> destination # 'Boston'
+```
+
+`format` supercedes string interpolation (but not replace) from older Python. Can be used on any string containing "replacement" fields, which are surrounded by curly braces. The objects provided as arguments to format are converted to strings and used to populate the replacement fields. Field names are matched up to positional arguments to format.
+
+```python
+>>> "The age of {0} is {1}".format('Jim', 32) # 'The age of Jim is 32'
+```
+
+Field name may be used more than once:
+
+```python
+>>> "The age of {0} is {1}. {0}'s birthday is on {2}".format('Fred', 24, 'October 31')
+"The age of Fred is 24. Fred's birthday is on October 31"
+```
+
+If field names are used exactly once and in the same order as the arguments, then the names can be ommitted:
+
+```python
+>>> "Reticulating spline {} of {}.".format(4, 23)
+"Reticulating spline 4 of 23"
+```
+
+Keyword arguments can be supplied:
+
+```python
+>>> "current position {lat} {lng}".format(lat="60N", lng="5E")
+'current position 60N 5E'
+```
+
+Can index into sequences with square brackets in replacement field:
+
+```python
+>>> pos = (65.2, 23.1, 82.2)
+>>> "Galactic position x={pos[0]} y={pos[1]} z={pos[2]}".format(pos=pos)
+'Galactic position x=65.2 y=23.1 z=82.2'
+```
+
+Can access object attributes:
+
+```python
+>>> import math
+>>> "Math constants: pi={m.pi}, e={m.e}".format(m=math)
+'Math constants: pi=3.141592653589793, e=2.718281828459045'
+```
+
+Also have control over field alignment and floating point formatting:
+
+```python
+>>> "Math constants: pi={m.pi:.3f}, e={m.e:.3f}".format(m=math)
+'Math constants: pi=3.142, e=2.718'
+```
+
+### Range
+
+Type of sequence used to represent an arithmetic progression of integers. Created by call to `range` constructor, there is no literal form.
