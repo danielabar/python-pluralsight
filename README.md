@@ -35,6 +35,7 @@
         - [Tuple](#markdown-header-tuple)
         - [String](#markdown-header-string)
         - [Range](#markdown-header-range)
+        - [List](#markdown-header-list)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -812,3 +813,44 @@ Also have control over field alignment and floating point formatting:
 ### Range
 
 Type of sequence used to represent an arithmetic progression of integers. Created by call to `range` constructor, there is no literal form.
+
+Typical usage, provide just the stop value, `range(5)` is equivalent to `range(0,5)`. Stop value is 1 past end of sequence:
+
+```python
+for i in range(5):
+  print(i)  # 0 1 2 3 4
+```
+
+Can also supply a start value `range(5, 10)` - 5 6 7 8 9. Common usage is to pass this to lsit constructor `list(range(5, 10))` - [5, 6, 7, 8, 9].
+
+Step argument controls interval between successive numbers `list(range(0, 10, 2))` - [0, 2, 4, 6, 8]. In this case, must supply all three arguments (start, stop, step).
+
+Note: Avoid range() for iterating over lists, Python is not C! Prefer direct iteration over iterable objects such as lists.
+
+If you need a counter, use `enumerate` function, which returns an iterable series of pairs, where each pair is a tuple. First element of pair is index of current item, second element of the pair is the item itself:
+
+```python
+>>> t = [6, 372, 8862, 14880]
+>>> for p in enumerate(t):
+...   print(p)
+(0, 6)
+(1, 372)
+(2, 8862)
+(3, 14880)
+```
+
+A further improvement is to use tuple unpacking:
+
+```python
+>>> for i, v in enumerate(t):
+...   print("i = {}, v = {}".format(i, v))
+...
+= 0, v = 6
+i = 1, v = 372
+i = 2, v = 8862
+i = 3, v = 14880
+```
+
+Ranges not widely used in modern Python code because of good iteration primitives.
+
+### List
