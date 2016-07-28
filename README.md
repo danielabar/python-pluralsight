@@ -36,6 +36,9 @@
         - [String](#markdown-header-string)
         - [Range](#markdown-header-range)
         - [List](#markdown-header-list)
+            - [Indexing](#markdown-header-indexing)
+            - [Slicing](#markdown-header-slicing)
+        - [Shallow Copies](#markdown-header-shallow-copies)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -854,3 +857,66 @@ i = 3, v = 14880
 Ranges not widely used in modern Python code because of good iteration primitives.
 
 ### List
+
+#### Indexing
+
+Zero and positive integers index from the beginning:
+
+![list index front](images/list-index-front.png "List Index Front")
+
+Lists and other sequences such as tuples can also be indexed from the end, using negative indexes:
+
+![list index end](images/list-index-back.png "List Index End")
+
+```python
+>>> s = "show how to index into sequences".split()
+>>> s
+'show', 'how', 'to', 'index', 'into', 'sequences']
+>>> s[4] # extracts 5th element
+'into'
+>>> s[-5] # extracts 5th element fron the end
+'how'
+>>> s[-1] # last element of sequence, more elegant than length-1 solution
+'Sequences'
+```
+
+Note index -0 returns same as 0, which is first element in list. This means negative indexing is 1 based.
+
+#### Slicing
+
+A form of extended indexing, to refer to portions of a list.
+
+![list slice](images/list-slice.png "List Slice")
+
+`slice = seq[start:stop]`
+
+Slice range is _half-open_ - stop not included.
+
+```python
+>>> s = "show how to index into sequences".split()
+>>> s[1:4]
+['how', 'to', 'index']
+```
+
+Can be combined with negative indexing, for example, all elements but first and last:
+
+![slice negative](images/slice-negative.png "Slice Negative")
+
+```python
+>>> s[1:-1]
+['how', 'to', 'index', 'into']
+```
+
+Start and stop indicies are optional. To slice all elements from third to end of list, `s[3:]`.
+
+To slice all elements from beginning of list, up to, but no tincluding the third, `s[:3]`.
+
+Half-open ranges give complementary slices: `s[:x] + s[x:] == s`
+
+Since start and stop are optional, all elements of a list can be retrieved with `full_slice = s[:]`. This is an important idiom for copying lists. `full_slice` has distinct identity from `s`, but equivalent value. But note that elements within full_slice are references to the same objects that `s` refers to.
+
+A more obvious way to copy a list is `u = s.copy()`, or list constructor `v = list(s)`. Constructor is more flexible than `copy` method because it can accept any iterable source, not just lists.
+
+All of the above techniques perform a _shallow copy_. Create a new list containing the _same_ object references as the original list.
+
+### Shallow Copies
