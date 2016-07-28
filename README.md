@@ -39,6 +39,8 @@
             - [Indexing](#markdown-header-indexing)
             - [Slicing](#markdown-header-slicing)
         - [Shallow Copies](#markdown-header-shallow-copies)
+        - [List Repetition](#markdown-header-list-repetition)
+        - [More on List](#markdown-header-more-on-list)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -920,3 +922,59 @@ A more obvious way to copy a list is `u = s.copy()`, or list constructor `v = li
 All of the above techniques perform a _shallow copy_. Create a new list containing the _same_ object references as the original list.
 
 ### Shallow Copies
+
+Given a list with nested lists:
+
+```python
+>>> a = [[1, 2], [3, 4]]
+```
+
+![nested lists](images/nested-lists.png "Nested Lists")
+
+Now when its copied:
+
+```python
+>>> b = a[:]
+>>> a is b
+False # lists are distinct objects
+>>> a == b
+True # lists contain equivalent values
+>>> a[0] === b[0]
+True # lists refer to same inner object
+```
+
+![list shallow copy](images/list-shallow-copy.png "List Shallow Copy")
+
+### List Repetition
+
+Repetition is supported using multiplication operator.
+
+```python
+>>> c = [21, 37]
+>>> d = c * 4
+>>> d
+[21, 37, 21, 37, 21, 37, 21, 37]
+```
+
+Note that repetition repeats the _reference_, without copying the value. i.e. makesk shallow copies.
+
+### More on List
+
+To find an element in a list, use index method, passing object to search for. Elements are compared for equivalence or value equality.
+
+```python
+>>> w = "the quick brown fox jumps over the lazy dog".split()
+>>> w
+['the', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog']
+>>> i = w.index('fox')
+>>> i
+3
+>>> w[i]
+'fox'
+>>> w.index('unicorn') # trying to find something that's not there generates ValueError
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ValueError: 'unicorn' is not in list
+```
+
+Left at 0:35 of "More on List"
