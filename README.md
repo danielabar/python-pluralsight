@@ -41,6 +41,8 @@
         - [Shallow Copies](#markdown-header-shallow-copies)
         - [List Repetition](#markdown-header-list-repetition)
         - [More on List](#markdown-header-more-on-list)
+        - [Growing Lists](#markdown-header-growing-lists)
+        - [Reversing and Sorting Lists](#markdown-header-reversing-and-sorting-lists)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -977,4 +979,114 @@ Traceback (most recent call last):
 ValueError: 'unicorn' is not in list
 ```
 
-Left at 0:35 of "More on List"
+Another way to search is to count occurrences of matching elements:
+
+```python
+>>> w.count('the')
+2
+```
+
+Use `in` operator to test for membership:
+
+```python
+>>> 37 in [1, 78, 9, 37, 34, 53]
+True
+>>> 78 not in [1, 78, 9, 37, 34, 53]
+False
+```
+
+Use `del` to remove elements from list. Takes a single parameter, which is a reference to a list element, and removes it from the list.
+
+```python
+>>> u = "jackdaws love my big sphinx of quartz".split()
+>>> u
+['jackdaws', 'love', 'my', 'big', 'sphinx', 'of', 'quartz']
+>>> del u[3]
+>>> u
+['jackdaws', 'love', 'my', 'sphinx', 'of', 'quartz']
+```
+
+Use `remove` method to remove elements by value rather than position:
+
+```python
+>>> u.remove('jackdaws')
+>>> u
+['love', 'my', 'sphinx', 'of', 'quartz']
+```
+
+Equivalent to using `del` and index:
+
+```python
+>>> del[u[u.index('quartz')]]
+>>> u
+['love', 'my', 'sphinx', 'of']
+```
+
+Attempting to remove an item that does not exist results in `ValueError`.
+
+Use `insert` method to add items to the list. Takes the index of the new item and the item itself.
+
+```python
+>>> a = "I accidentally the whole universe".split()
+>>> a.insert(2, "destroyed")
+>>> a
+['I', 'accidentally', 'destroyed', 'the', 'whole', 'universe']
+```
+
+Convert list back to string by invoking `join` on space separator:
+
+```python
+>>> ' '.join(a)
+'I accidentally destroyed the whole universe'
+```
+
+### Growing Lists
+
+Concatenating lists using addition operator results in a new list, with no changes of the original lists, whereas augmented assignment operator `+=` modifies the assignee in place.
+
+```python
+>>> m = [2, 1, 3]
+>>> n = [4, 7, 11]
+>>> k = m + n
+>>> k
+[2, 1, 3, 4, 7, 11]
+>>> m
+[2, 1, 3]
+>>> n
+[4, 7, 11]
+>>> k += [18, 29, 47]
+>>> k
+[2, 1, 3, 4, 7, 11, 18, 29, 47]
+```
+
+Extend method also does what `+=` operator does.
+
+```python
+k.extend([76, 129, 199])
+>>> k
+[2, 1, 3, 4, 7, 11, 18, 29, 47, 76, 129, 199]
+```
+
+The above works with any iterable series, not just lists.
+
+### Reversing and Sorting Lists
+
+List can be reversed in place
+
+```python
+>>> g = [1, 11, 21, 1211, 112111]
+>>> g.reverse()
+>>> g
+[112111, 1211, 21, 11, 1]
+```
+
+And sorted
+
+```python
+>>> d = [5, 17, 41, 29, 71, 149, 3299, 7, 13, 67]
+>>> d.sort()
+>>> d
+[5, 7, 13, 17, 29, 41, 67, 71, 149, 3299]
+```
+
+Left 0:20 Reversing and Sorting Lists
