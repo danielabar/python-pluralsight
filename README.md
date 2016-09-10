@@ -2,47 +2,48 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [Python Fundamentals](#markdown-header-python-fundamentals)
-    - [Getting Started With Python 3](#markdown-header-getting-started-with-python-3)
-        - [Scalar Types](#markdown-header-scalar-types)
-        - [Relational Operators](#markdown-header-relational-operators)
-        - [Conditional Statements](#markdown-header-conditional-statements)
-        - [While Loops](#markdown-header-while-loops)
-    - [Strings and Collections](#markdown-header-strings-and-collections)
-        - [Strings](#markdown-header-strings)
-        - [Bytes](#markdown-header-bytes)
-        - [Lists](#markdown-header-lists)
-        - [Dictionaries](#markdown-header-dictionaries)
-        - [For Loops](#markdown-header-for-loops)
-        - [Putting it all together](#markdown-header-putting-it-all-together)
-    - [Modularity](#markdown-header-modularity)
-        - [Creating, Running, and Importing a Module](#markdown-header-creating-running-and-importing-a-module)
-        - [Defining Functions and Returning Values](#markdown-header-defining-functions-and-returning-values)
-        - [Distinguishing Between Module Import and Module Execution](#markdown-header-distinguishing-between-module-import-and-module-execution)
-        - [The Python Execution Model](#markdown-header-the-python-execution-model)
-        - [Main Functions and Command Line Arguments](#markdown-header-main-functions-and-command-line-arguments)
-        - [Sparse is better than Dense](#markdown-header-sparse-is-better-than-dense)
-        - [Documenting Using Docstrings](#markdown-header-documenting-using-docstrings)
-        - [Documenting With Comments](#markdown-header-documenting-with-comments)
-        - [The Whole Shebang](#markdown-header-the-whole-shebang)
-    - [Objects](#markdown-header-objects)
-        - [Argument Passing](#markdown-header-argument-passing)
-        - [Function Arguments in Detail](#markdown-header-function-arguments-in-detail)
-        - [Python's Type System](#markdown-header-pythons-type-system)
-        - [Variable Scoping](#markdown-header-variable-scoping)
-        - [Everything is an object](#markdown-header-everything-is-an-object)
-    - [Collections](#markdown-header-collections)
-        - [Tuple](#markdown-header-tuple)
-        - [String](#markdown-header-string)
-        - [Range](#markdown-header-range)
-        - [List](#markdown-header-list)
-            - [Indexing](#markdown-header-indexing)
-            - [Slicing](#markdown-header-slicing)
-        - [Shallow Copies](#markdown-header-shallow-copies)
-        - [List Repetition](#markdown-header-list-repetition)
-        - [More on List](#markdown-header-more-on-list)
-        - [Growing Lists](#markdown-header-growing-lists)
-        - [Reversing and Sorting Lists](#markdown-header-reversing-and-sorting-lists)
+- [Python Fundamentals](#python-fundamentals)
+  - [Getting Started With Python 3](#getting-started-with-python-3)
+    - [Scalar Types](#scalar-types)
+    - [Relational Operators](#relational-operators)
+    - [Conditional Statements](#conditional-statements)
+    - [While Loops](#while-loops)
+  - [Strings and Collections](#strings-and-collections)
+    - [Strings](#strings)
+    - [Bytes](#bytes)
+    - [Lists](#lists)
+    - [Dictionaries](#dictionaries)
+    - [For Loops](#for-loops)
+    - [Putting it all together](#putting-it-all-together)
+  - [Modularity](#modularity)
+    - [Creating, Running, and Importing a Module](#creating-running-and-importing-a-module)
+    - [Defining Functions and Returning Values](#defining-functions-and-returning-values)
+    - [Distinguishing Between Module Import and Module Execution](#distinguishing-between-module-import-and-module-execution)
+    - [The Python Execution Model](#the-python-execution-model)
+    - [Main Functions and Command Line Arguments](#main-functions-and-command-line-arguments)
+    - [Sparse is better than Dense](#sparse-is-better-than-dense)
+    - [Documenting Using Docstrings](#documenting-using-docstrings)
+    - [Documenting With Comments](#documenting-with-comments)
+    - [The Whole Shebang](#the-whole-shebang)
+  - [Objects](#objects)
+    - [Argument Passing](#argument-passing)
+    - [Function Arguments in Detail](#function-arguments-in-detail)
+    - [Python's Type System](#pythons-type-system)
+    - [Variable Scoping](#variable-scoping)
+    - [Everything is an object](#everything-is-an-object)
+  - [Collections](#collections)
+    - [Tuple](#tuple)
+    - [String](#string)
+    - [Range](#range)
+    - [List](#list)
+      - [Indexing](#indexing)
+      - [Slicing](#slicing)
+    - [Shallow Copies](#shallow-copies)
+    - [List Repetition](#list-repetition)
+    - [More on List](#more-on-list)
+    - [Growing Lists](#growing-lists)
+    - [Reversing and Sorting Lists](#reversing-and-sorting-lists)
+    - [Dictionary](#dictionary)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1089,4 +1090,60 @@ And sorted
 [5, 7, 13, 17, 29, 41, 67, 71, 149, 3299]
 ```
 
-Left 0:20 Reversing and Sorting Lists
+`sort` method accepts two optional arguments `reverse` and `key`
+
+```python
+>>> d = [5, 17, 41, 29, 71, 149, 3299, 7, 13, 67]
+>>> d.sort(reverse=True )
+>>> d
+[3299, 149, 71, 67, 41, 29, 17, 13, 7, 5]
+```
+
+`key` parameter accepts any *callable* object, used to extract key from each item.
+Items will be sorted according to relative ordering of these keys.
+
+**Callable Objects**
+
+Functions, built in `len` function is used to determine length of collection.
+It can be used as a key to order words by length. For exmaple:
+
+```python
+>>> h = 'not perplexing do handwriting family where I illegibly know doctors'.split()
+>>> h
+['not', 'perplexing', 'do', 'handwriting', 'family', 'where', 'I', 'illegibly', 'know', 'doctors']
+>>> h.sort(key=len)
+>>> h
+['I', 'do', 'not', 'know', 'where', 'family', 'doctors', 'illegibly', 'perplexing', 'handwriting']
+```
+
+Then to join list of words back together into a single word, use `join` function with a space separator:
+
+```python
+>>> ' '.join(h)
+'I do not know where family doctors illegibly perplexing handwriting'
+```
+
+**Avoiding Side Effects**
+
+Sometimes want to sort or reverse a list without modifying the original.
+Use build in functions `reversed` and `sorted`, which return reverse iterator and a new sorted list.
+
+```python
+>>> x = [4, 9, 2, 1]
+>>> y = sorted(x)
+>>> y
+[1, 2, 4, 9]
+>>> x
+[4, 9, 2, 1]
+>>>
+>>> p = [9, 3, 1, 0]
+>>> q = reversed(p)
+>>> q
+<list_reverseiterator object at 0x102ac7550>
+>>> list(q)  # use list constructor to evaluate result of reversed because reversed returns an iterator
+[0, 1, 3, 9]
+>>> p
+[9, 3, 1, 0]
+```
+
+### Dictionary
