@@ -280,7 +280,9 @@ List constructor can be used to create a list from another collection such as a 
 
 Mutable mappings of keys to values.
 
-Dict literals `{k1: v1, k2: v2}`. Items can be retrieved and assigned by key using square brackets:
+Dict literals delimited by curly braces and contain comma separated key-value pairs `{k1: v1, k2: v2}`.
+
+Items can be retrieved and assigned by key using square brackets:
 
 ```python
 >>> d = {'alice': '123', 'bob': '456'}
@@ -1147,3 +1149,10 @@ Use build in functions `reversed` and `sorted`, which return reverse iterator an
 ```
 
 ### Dictionary
+
+Unordered mapping from unique, immutable keys (eg: Strings, Numbers, Tuples ) to mutable values.
+Keys must be unique. Can have duplicate values as long as they're associated with different keys.
+
+`dict` constructor can convert other types to dictionaries:
+
+Left at 1:14 of [Dictionary](https://app.pluralsight.com/player?course=python-fundamentals&author=robert-smallshire&name=python-fundamentals-m05-collections&clip=10&mode=live)
