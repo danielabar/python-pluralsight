@@ -1153,6 +1153,90 @@ Use build in functions `reversed` and `sorted`, which return reverse iterator an
 Unordered mapping from unique, immutable keys (eg: Strings, Numbers, Tuples ) to mutable values.
 Keys must be unique. Can have duplicate values as long as they're associated with different keys.
 
-`dict` constructor can convert other types to dictionaries:
+`dict` constructor can convert other types to dictionaries, copying an iterable series of key-value pairs stored in tuples:
 
-Left at 1:14 of [Dictionary](https://app.pluralsight.com/player?course=python-fundamentals&author=robert-smallshire&name=python-fundamentals-m05-collections&clip=10&mode=live)
+```python
+>>> names_and_ages = [ ('Alice', 32), ('Bob', 48), ('Charlie', 28), ('Daniel', 33)]
+>>> d = dict(names_and_ages)
+>>> d
+{'Charlie': 28, 'Alice': 32, 'Daniel': 33, 'Bob': 48}
+```
+
+As long as keys are valid identifiers, can even create a dictionary directly from keyword arguments.
+
+```python
+>>> phonetic = dict(a='alfa', b='bravo', c='charlie', d='delta', e='echo', f='foxtrot')
+>>> phonetic
+{'b': 'bravo', 'f': 'foxtrot', 'e': 'echo', 'd': 'delta', 'c': 'charlie', 'a': 'alfa'}
+```
+
+Dictionary copying is shallow by default, copying only references to the key and value objects, not the objects themselves.
+There are two ways to copy a dictionary, either using the `copy` method, or to pass an existing dictionary to the `dict` constructor.
+
+```python
+>>> d = dict(goldenrod=0xDAA520, indigo=0x4B0082, seashell=0xFFF5EE)
+>>> d
+{'indigo': 4915330, 'goldenrod': 14329120, 'seashell': 16774638}
+>>> e = d.copy()
+>>> e
+{'indigo': 4915330, 'goldenrod': 14329120, 'seashell': 16774638}
+>>>
+>>> f = dict(e)
+>>> f
+{'indigo': 4915330, 'goldenrod': 14329120, 'seashell': 16774638}
+```
+
+**Update**
+
+Dictionary can be extended with definitions from another dictionary using `update` method, invoked on the dictionary object to be updated:
+
+```python
+>>> g = dict(wheat=0xF5DEB3, khaki=0xF0E68C, crimson=0xDC143D)
+>>> f.update(g)
+>>> f
+{'indigo': 4915330, 'goldenrod': 14329120, 'seashell': 16774638, 'crimson': 14423101, 'wheat': 16113331, 'khaki': 15787660}
+```
+
+If argument to update contains keys that are already in the target dictionary, then the values for these keys are replaced in the target:
+
+```python
+>>> stocks = {'GOOG': 891, 'AAPL': 416, 'IBM': 194}
+>>> stocks.update({'GOOG': 894, 'YHOO': 25})
+>>> stocks
+{'AAPL': 416, 'GOOG': 894, 'IBM': 194, 'YHOO': 25}
+```
+
+Dictionaries are iterable using for loops. Dictionary yields the next key on each iteration, and value can be retrieved using lookup with square bracket notation.
+
+```python
+>>> colors = dict(aquamarine='#7FFFD4', burlywood='#DEB887', chartreuse='#7FFF00', cornflower='#6495ED', firebrick='#B22222', honeydew='#F0FFF0', maroon='#B03060', sienna='#A0522D')
+>>> for key in colors:
+...    print("{key} => {value}".format(key=key, value=colors[key]))
+...
+cornflower => #6495ED
+honeydew => #F0FFF0
+maroon => #B03060
+firebrick => #B22222
+burlywood => #DEB887
+aquamarine => #7FFFD4
+sienna => #A0522D
+chartreuse => #7FFF00
+```
+
+Can also iterate over just the values, using the `values` dictionary method, which returns an object which provides an iterable view of the dictionary values without copying the values. Note there is no efficient way to retrieve the key from a value:
+
+```python
+>>> for value in colors.values():
+...   print(value)
+...
+#6495ED
+#F0FFF0
+#B03060
+#B22222
+#DEB887
+#7FFFD4
+#A0522D
+#7FFF00
+```
+
+Left at 3:23 of Dictionary
