@@ -1239,4 +1239,53 @@ Can also iterate over just the values, using the `values` dictionary method, whi
 #7FFF00
 ```
 
-Left at 3:23 of Dictionary
+`keys` method provides an iterable view of the dictionary keys, but not often used because default iteration of dictionaries is already by key.
+
+```python
+>>> for key in colors.keys():
+...   print(key)
+...
+burlywood
+honeydew
+firebrick
+aquamarine
+chartreuse
+sienna
+cornflower
+maroon
+```
+
+Most useful is to iterate over keys and values at the same time. Each key/value pair in dictionary is called an *item*.
+Can get an iterable view of the items using the dictionary's `items` method. When iterated over items view yields each key/value pair as a tuple. Tuple unpacking is used in the `for` statement to access both key and value in one operation.
+
+```python
+for key, value in colors.items():
+...   print("{key} => {value}".format(key=key, value=value))
+...
+burlywood => #DEB887
+honeydew => #F0FFF0
+firebrick => #B22222
+aquamarine => #7FFFD4
+chartreuse => #7FFF00
+sienna => #A0522D
+cornflower => #6495ED
+maroon => #B03060
+```
+
+**Membership**
+
+Membership tests use `in` and `not in` operators and work only on keys.
+
+```python
+>>> symbols = dict(usd='\u0024', gbp='\u00a3', nzd='\u0024', krw='\u20a9', eur='\u20ac', jpy='\u00a5', nok='kr', ils='\u20aa', hhg='Pu')
+>>> symbols
+'gbp': '£', 'eur': '€', 'nok': 'kr', 'ils': '₪', 'usd': '$', 'hhg': 'Pu', 'nzd': '$', 'jpy': '¥', 'krw': '₩'}
+>>>
+>>> 'nzd' in symbols
+True
+>>>
+>>> 'mkd' in symbols
+>>> False
+```
+
+Left at 4:30 of Dictionary
