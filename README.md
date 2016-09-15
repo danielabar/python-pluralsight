@@ -44,6 +44,8 @@
     - [Growing Lists](#growing-lists)
     - [Reversing and Sorting Lists](#reversing-and-sorting-lists)
     - [Dictionary](#dictionary)
+      - [Pretty Printing](#pretty-printing)
+    - [Set](#set)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1288,4 +1290,52 @@ True
 >>> False
 ```
 
-Left at 4:30 of Dictionary
+`del` keyword is used to remove entries from a dictionary:
+
+```python
+>>> z = {'H': 1, 'Tc': 43, 'Xe': 54, 'Un': 137, 'Rf': 104, 'Fm': 100}
+>>> z
+{'Un': 137, 'Xe': 54, 'Rf': 104, 'Fm': 100, 'Tc': 43, 'H': 1}
+>>>
+del z['Un']
+>>> z
+{'Xe': 54, 'Rf': 104, 'Fm': 100, 'Tc': 43, 'H': 1}
+```
+
+**Mutability**
+
+Dictionary keys are immutable, values can be modified.
+For example, can use augmented assignment operator to append new elements to one of the entry values:
+
+```python
+>>> m = {'H': [1, 2, 3], 'He': [3, 4], 'Li': [6, 7], 'Be': [7, 9, 10], 'B': [10, 11], 'C': [11, 12, 13, 14]}
+>>> m['H'] += [4, 5, 6, 7]
+>>> m['H']
+[1, 2, 3, 4, 5, 6, 7]
+```
+
+The dictionary itself is mutable, for example, new entries can be added after it has been created:
+
+```python
+>>> m['N'] = [13, 14, 15]
+>>> m
+{'C': [11, 12, 13, 14], 'He': [3, 4], 'Be': [7, 9, 10], 'Li': [6, 7], 'N': [13, 14, 15], 'H': [1, 2, 3, 4, 5, 6, 7], 'B': [10, 11]}
+```
+
+#### Pretty Printing
+
+`pprint` module is part of Python standard library. It contains a function also named `pprint`, therefore bind it to a different named variable when importing.
+
+```python
+>>> from pprint import pprint as pp
+>>> pp(m)
+{'B': [10, 11],
+ 'Be': [7, 9, 10],
+ 'C': [11, 12, 13, 14],
+ 'H': [1, 2, 3, 4, 5, 6, 7],
+ 'He': [3, 4],
+ 'Li': [6, 7],
+ 'N': [13, 14, 15]}
+```
+
+### Set
