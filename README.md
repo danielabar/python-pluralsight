@@ -1339,3 +1339,84 @@ The dictionary itself is mutable, for example, new entries can be added after it
 ```
 
 ### Set
+
+Unordered collection of unique elements. Collection is mutable (elements can be added and removed from the set),
+but the element itself is immutable.
+
+Literal form is similar to dictionary:
+
+```python
+>>> p = {6, 28, 496, 8128, 33550336}
+>>> p
+{33550336, 496, 28, 6, 8128}
+>>> type(p)
+<class 'set'>
+```
+
+Recall that empty curly braces create an empty dictionary, therefore to create an empty set, use the `set` constructor with no arguments:
+
+```python
+>>> d = {}
+>>> type(d)
+<class 'dict'>
+>>>
+>>> e = set()
+>>> e
+set()
+```
+
+Set constructor can create a set from any iterable series (such as list):
+
+```python
+>>> s = set([2, 4, 26, 64, 4096, 65536, 262144])
+>>> s
+{64, 4096, 2, 65536, 4, 262144, 26}
+```
+
+Duplicates are discarded, common pattern is to use sets to remove duplicate items from a series of objects:
+
+```python
+>>> t = [1, 4, 2, 1, 7, 9, 9]
+>>> set(t)
+{1, 2, 4, 9, 7}
+```
+
+Sets are iterable, but the order is arbitrary:
+
+```python
+>>> for x in {1, 2, 4, 8, 16, 32}:
+...     print(x)
+...
+32
+1
+2
+4
+8
+16
+```
+
+Membership is performed in `in` and `not in` operators:
+
+```python
+>>> q = {2, 9, 6, 4}
+>>> 3 in q
+False
+>>> 3 not in q
+True
+```
+
+Use `add` method to add a single element. Adding an element that already exists has no effect, does not generate an error.
+
+```python
+>>> k = {81, 108}
+>>> k
+{81, 108}
+>>> k.add(54)
+>>> k
+{81, 108, 54}
+>>> k.add(108)
+>>> k
+{81, 108, 54}
+```
+
+Left at 1:35 Set
