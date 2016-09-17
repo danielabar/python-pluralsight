@@ -1556,3 +1556,26 @@ True
 ```
 
 ### Collection Protocols
+
+![collection protocols](images/collection-protocols.png "collection protocols")
+
+A *protocol* is a set of operations or methods that a type must support if it is to implement that protocol.
+Protocol doesn't need to be defined in src (like Java interface).
+
+**Container Protocol** requires that membership testing is supported using `in` and `not in` operators.
+
+**Sized Protocol** requires that number of elements in collection can be determined by passing the collection to the built-in `len(s)` function.
+
+**Iterable Protocol** requires that an *iterator* can be produced with built-in `iter(s)` and can be used with for loops:
+
+```python
+for item in terable:
+  do_something(item)
+```
+
+**Sequence Protocol** requires that:
+
+* Elements can be retrieved using square brackets and an integer index `item = seq[index]`
+* Elements can be found by value `index = seq.index(item)`
+* Count items `num = seq.count(item)`
+* Can produce a reversed sequence using the `reverse` built in function `r = reversed(seq)`
