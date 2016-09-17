@@ -46,6 +46,7 @@
     - [Dictionary](#dictionary)
       - [Pretty Printing](#pretty-printing)
     - [Set](#set)
+    - [Collection Protocols](#collection-protocols)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1419,4 +1420,139 @@ Use `add` method to add a single element. Adding an element that already exists 
 {81, 108, 54}
 ```
 
-Left at 1:35 Set
+Multiple elements can be added at once using `update` method, which takes any iterable series, including another set:
+
+```python
+>>> k.update([37, 128, 87])
+>>> k
+{128, 81, 108, 37, 87}
+>>> k.update({7, 8})
+>>> k
+{128, 81, 7, 37, 87, 8, 108}
+```
+
+`remove` method removes an element from the set, but throws an error if the element is not a member of the set:
+
+```python
+>>> k.remove(81)
+>>> k
+{128, 7, 37, 87, 8, 108}
+>>> k.remove(999)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+KeyError: 999
+```
+
+`discard` method also removes an element from the set, but has no effect (and no error) if element is not a member of the set:
+
+```python
+>>> k.discard(999)
+>>> k
+{128, 7, 37, 87, 8, 108}
+```
+
+`copy` method performs a shallow copy of the set, copying *references*, but not the objects they refer to:
+
+```python
+>>> j = k.copy()
+>>> j
+{128, 37, 87, 7, 8, 108}
+```
+
+`set` constructor:
+
+```python
+>>> m = set(j)
+>>> m
+{128, 37, 87, 7, 8, 108}
+```
+
+**Set Algebra**
+
+Powerful operations to compute set unions, differences, and intersections, and to evaluate whether two sets have subset, superset, or disjoint relations.
+
+```python
+>>> blue_eyes = {'Olivia', 'Harry', 'Lily', 'Jack', 'Amelia'}
+>>> blond_hair = {'Harry', 'Jack', 'Amelia', 'Mia', 'Joshua'}
+>>> smell_hcn = {'Harry', 'Amelia'}
+>>> taste_ptc = {'Harry', 'Lily', 'Amelia', 'Lola'}
+>>> o_blood = {'Mia', 'Joshua', 'Lily', 'Olivia'}
+>>> b_blood = {'Amelia', 'Jack'}
+>>> a_blood = {'Harry'}
+>>> ab_blood = {'Joshua', 'Lola'}
+```
+
+`union` method collects all elements that are in either or both sets, for example find all people with blue eyes, blond hair, or both:
+
+```python
+>>> blue_eyes.union(blond_hair)
+{'Lily', 'Joshua', 'Harry', 'Jack', 'Amelia', 'Mia', 'Olivia'}
+```
+
+`union` is *commutative*, can swap order of operands and get equivalent results:
+
+```python
+>>> blue_eyes.union(blond_hair ) == blond_hair.union(blue_eyes)
+True
+```
+
+`intersection` collects only elements that are present in both sets, for example, find all people with blue eyes *and* blond hair:
+
+```python
+>>> blue_eyes.intersection(blond_hair)
+{'Jack', 'Harry', 'Amelia'}
+```
+
+`intersection` is also commutative.
+
+`difference` method finds all elements in first set that are *not* in the first set, for example, find people with blond hair who don't have blue eyes:
+
+```python
+>>> blond_hair.difference(blue_eyes)
+{'Joshua', 'Mia'}
+```
+
+`difference` is *not* commutative.
+
+`symmetric_difference` collects all the elements that are in the first set or the second set, but not both, for example, find people who have exclusively blond hair or blue eyes but not both:
+
+```python
+blond_hair.symmetric_difference(blue_eyes)
+```
+
+`symmetric_difference` is commutative.
+
+**Predicate Methods** Provide information on relationship between sets.
+
+**Subset**
+
+![subset](images/subset.png "subset")
+
+Check if one set is a setset of another, for example, do all the people that can smell hydrogen cyanide also have blonde hair:
+
+```python
+>>> smell_hcn.issubset(blond_hair)
+>>> True
+```
+
+**Superset**
+
+![superset](images/superset.png "superset")
+
+For example, can all the people that taste ptc also smell hcn:
+
+```python
+>>> taste_ptc.issuperset(smell_hcn)
+True
+```
+
+**Disjoint**
+
+Test that two sets have no members in common.
+
+```python
+>>> a_blood.isdisjoint(o_blood)
+True
+```
+
+### Collection Protocols
