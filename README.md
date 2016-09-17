@@ -1579,3 +1579,47 @@ for item in terable:
 * Elements can be found by value `index = seq.index(item)`
 * Count items `num = seq.count(item)`
 * Can produce a reversed sequence using the `reverse` built in function `r = reversed(seq)`
+
+## Handling Exceptions
+
+Mechanism for stopping normal program flow and continuing at some surrounding context or code block. (Python's exception handling is similar to other imperative languages such as C++ or Java).
+
+*Raise* an exception to interrupt program flow.
+
+*Handle* an exception to resume control.
+
+*Unhandled exceptions* will terminate the program.
+
+*Exception objects* contain information about the exception event such as where it occurred.
+
+### Exceptions and Control Flow
+
+[Example](code/exceptional.py)
+
+Import this module into repl:
+
+```python
+>>> from exceptional import convert
+```
+
+Try a normal usage:
+
+```python
+>>> convert("33")
+33
+```
+
+Try exceptional usage, `int` constructor will raise an exception at unexpected input:
+
+```python
+>>> convert("hedgehog")
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/Users/dbaron/projects/python-pluralsight/code/exceptional.py", line 6, in convert
+    x = int(s)
+ValueError: invalid literal for int() with base 10: 'hedgehog'
+```
+
+`ValueError` displayed in stack trace is the *type* of the exception object and error message "ValueError: invalid literal..." is part of payload of the exception object.
+
+Exception propagates across several levels in the call stack.
