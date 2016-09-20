@@ -47,6 +47,10 @@
       - [Pretty Printing](#pretty-printing)
     - [Set](#set)
     - [Collection Protocols](#collection-protocols)
+  - [Handling Exceptions](#handling-exceptions)
+    - [Exceptions and Control Flow](#exceptions-and-control-flow)
+    - [Handling Exceptions](#handling-exceptions-1)
+    - [Programmer Errors](#programmer-errors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1569,7 +1573,7 @@ Protocol doesn't need to be defined in src (like Java interface).
 **Iterable Protocol** requires that an *iterator* can be produced with built-in `iter(s)` and can be used with for loops:
 
 ```python
-for item in terable:
+for item in iterable:
   do_something(item)
 ```
 
@@ -1623,3 +1627,54 @@ ValueError: invalid literal for int() with base 10: 'hedgehog'
 `ValueError` displayed in stack trace is the *type* of the exception object and error message "ValueError: invalid literal..." is part of payload of the exception object.
 
 Exception propagates across several levels in the call stack.
+
+### Handling Exceptions
+
+To make the code more robust, handle `ValueError` using `try`...`except`
+
+```python
+def convert_handle(s):
+  '''Convert to an integer.'''
+  try:
+      x = int(s)
+  except ValueError:
+      x = -1
+  return x
+```
+
+`try` block contains code that could raise an exception.
+
+`except` block contains code that performs error handling if an exception is raised.
+
+Each try block can have multiple except blocks to handle exceptions of different types:
+
+```python
+def convert_handle(s):
+    '''Convert to an integer.'''
+    try:
+        x = int(s)
+        print("Conversion succeeded! x =", x)
+    except ValueError:
+        print("Conversion failed.")
+        x = -1
+    except TypeError:
+        print("Conversion failed.")
+        x = -1
+    return x
+```
+
+To avoid code duplication, multiple `except` block can accept a tuple of exception types:
+
+```python
+def convert_collapse(s):
+    '''Convert to an integer.'''
+    x = -1
+    try:
+        x = int(s)
+        print("Conversion succeeded! x =", x)
+    except (ValueError, TypeError):
+        print("Conversion failed.")
+    return x
+```
+
+### Programmer Errors
