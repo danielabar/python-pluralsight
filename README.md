@@ -51,6 +51,7 @@
     - [Exceptions and Control Flow](#exceptions-and-control-flow)
     - [Handling Exceptions](#handling-exceptions-1)
     - [Programmer Errors](#programmer-errors)
+    - [Imprudent Error Codepoints](#imprudent-error-codepoints)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1633,7 +1634,7 @@ Exception propagates across several levels in the call stack.
 To make the code more robust, handle `ValueError` using `try`...`except`
 
 ```python
-def convert_handle(s):
+def convert(s):
   '''Convert to an integer.'''
   try:
       x = int(s)
@@ -1649,7 +1650,7 @@ def convert_handle(s):
 Each try block can have multiple except blocks to handle exceptions of different types:
 
 ```python
-def convert_handle(s):
+def convert(s):
     '''Convert to an integer.'''
     try:
         x = int(s)
@@ -1666,7 +1667,7 @@ def convert_handle(s):
 To avoid code duplication, multiple `except` block can accept a tuple of exception types:
 
 ```python
-def convert_collapse(s):
+def convert(s):
     '''Convert to an integer.'''
     x = -1
     try:
@@ -1678,3 +1679,48 @@ def convert_collapse(s):
 ```
 
 ### Programmer Errors
+
+Not useful to catch programming errors such as `IndentationError`, `SyntaxError`, `NameError`. These should be corrected during development. They're only useful to catch as exceptions for tool development such as an IDE.
+
+If there's no code to handle an exception, its an error to have an empty block, so instead, use `pass`, special statement that does nothing:
+
+```python
+def convert(s):
+    '''Convert to an integer.'''
+    x = -1
+    try:
+        x = int(s)
+        print("Conversion succeeded! x =", x)
+    except (ValueError, TypeError):
+        pass
+    return x
+```
+
+The above code can be simplified further with multiple return statements:
+
+```python
+def convert(s):
+  '''Convert to an integer.'''
+  try:
+    return int(s)
+  except (ValueError, TypeError):
+    return -1
+```
+
+Can get a named reference to the exception object using `as` clause, to get more details about what went wrong.
+Note need to import sys module to print to standard error:
+
+```python
+import sys
+
+def convert(s):
+  '''Convert to an integer.'''
+  try:
+    return int(s)
+  except (ValueError, TypeError) as e:
+    # exception objects can be converted to strings using str constructor
+    print("Conversion error: {}".format(str(e)), file=sys.stderr)
+    return -1
+```
+
+### Imprudent Error Codepoints
