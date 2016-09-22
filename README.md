@@ -51,7 +51,9 @@
     - [Exceptions and Control Flow](#exceptions-and-control-flow)
     - [Handling Exceptions](#handling-exceptions-1)
     - [Programmer Errors](#programmer-errors)
-    - [Imprudent Error Codepoints](#imprudent-error-codepoints)
+    - [Re-Raising Exceptions](#re-raising-exceptions)
+    - [Exceptions as APIs](#exceptions-as-apis)
+    - [Exceptions,APIS, and Protocols](#exceptionsapis-and-protocols)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1723,4 +1725,28 @@ def convert(s):
     return -1
 ```
 
-### Imprudent Error Codepoints
+### Re-Raising Exceptions
+
+Rather than returning an error code (which can be ignored by upstream callers, thus causing issues when the result is used), it's more *pythonic* to re-raise the exception object that is currently being handled:
+
+```python
+def convert_raise(s):
+    '''Convert to an integer.'''
+    try:
+        return int(s)
+    except(ValueError, TypeError) as e:
+        print("Conversion error: {}".format(str(e)), file=sys.stderr)
+        raise
+```
+
+### Exceptions as APIs
+
+[Example](code/roots.py)
+
+* Callers need to know what exceptions to expect and when, so they can put appropriate exception handlers in place. Document all exceptions in docstring.
+* Use exceptions that users will anticipate.
+* Standard exceptions are usually the best choice. For example, if a function parameter is supplied with illegal value, raise a `ValueError`, by using it as a constructor, passing in a string error message.
+
+### Exceptions,APIS, and Protocols
+
+Exceptions areparts of families of related functions referred to as "protocols".

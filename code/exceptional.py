@@ -1,6 +1,7 @@
 '''A module for demonstrating exceptions.'''
 
 import sys
+from math import log
 
 
 def convert(s):
@@ -41,3 +42,17 @@ def convert_details(s):
     except (ValueError, TypeError) as e:
         print("Conversion error: {}".format(str(e)), file=sys.stderr)
         return -1
+
+
+def convert_raise(s):
+    '''Convert to an integer.'''
+    try:
+        return int(s)
+    except(ValueError, TypeError) as e:
+        print("Conversion error: {}".format(str(e)), file=sys.stderr)
+        raise
+
+
+def strong_log(s):
+    v = convert_raise(s)
+    return log(v)
