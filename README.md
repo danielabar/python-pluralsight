@@ -56,6 +56,8 @@
     - [Exceptions,APIS, and Protocols](#exceptionsapis-and-protocols)
     - [EAFP vs LBYL](#eafp-vs-lbyl)
     - [Clean-Up Actions](#clean-up-actions)
+      - [Set Comprehension](#set-comprehension)
+      - [Dictionary Comprehension](#dictionary-comprehension)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1885,3 +1887,102 @@ Errors should never pass silently, unless explicitly silenced.
 Detecting a single keypress from python (such as press any key), reuires operating-system specific modules. Can't use built in `input` function because that waits for user to press Return key before returning a string.
 
 In Windows use `msvcrt` (Microsoft Visual C Runtime). On Linux and OSX, use `sys`, `tty`, `termios`. [Example](code/keypress.py)
+
+## Iterables
+
+### Comprehensions
+
+A concise syntax for describing lists, sets or dictionaries in a declarative or functional style. Resulting shorthand is readable and expressive.
+
+#### List Comprehension
+
+Comprehension is enclosed in square brackets like a literal list, but contains fragment of declarative code that describe how to construct the elements of the list.
+
+```python
+>>> words = "Why sometimes I have believed as many as six impossible things before breakfast".split()
+>>> words
+['Why', 'sometimes', 'I', 'have', 'believed', 'as', 'many', 'as', 'six', 'impossible', 'things', 'before', 'breakfast']
+>>>
+>>> my_comprehension = [len(word) for word in words]
+>>> my_comprehension
+[3, 9, 1, 4, 8, 2, 4, 2, 3, 10, 6, 6, 9]
+```
+
+The new list `my_comprehension` is formed by binding `word` to each value in `words` in turn, and evaluating the length of the word to create a new value.
+
+General form of list comprehensions:
+
+```python
+[ expr(item) for item in iterable ]
+```  
+
+For each item in the iterable object (on the right), evaluate the expression on the left (which is usually in terms of the item but doesn't have to be), and use the result of that evaluation as the next element in the new list being constructed.
+
+Equivalent code in imperative style, using for loop:
+
+```python
+my_imperative = []
+for word in words:
+  my_imperative.append(len(word))
+```
+
+Note that source object doesn't have to be a list, can be any iterable object such as tuple.
+
+Expression in terms of item can be any python expression.
+
+```python
+>>> from math import factorial
+>>> f = [len(str(factorial(x))) for x in range(20)]
+>>> f
+[1, 1, 1, 1, 2, 3, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 18]
+```
+
+#### Set Comprehension
+
+Similar syntax to list comprehension but using curly braces instead of square brackets:
+
+```python
+{ expr(item) for item in iterable }
+```
+
+Factorial example from list comprehension above contains duplicates, fix by using set comprehension:
+
+```python
+>>> g = {len(str(factorial(x))) for x in range(20)}
+>>> g
+{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 18}
+```
+
+But note that sets are unordered containers so results may not be in meaningful order.
+
+#### Dictionary Comprehension
+
+Also uses curly braces. Distinguished from set comprehension by providing two colon separated expressions for the key and value:
+
+```python
+{ key_expr:value_expr for item in iterable }
+```
+
+Example, invert dictionary to support lookups in opposite direction.
+
+```python
+>>> from pprint import pprint as pp
+>>>
+>>> country_to_capital = {'United Kingdom': 'London', 'Brazil': 'Brazilia', 'Morocoo': 'Rabat', 'Sweden': 'Stockholm'}
+>>> capital_to_country = { capital: country for country, capital in country_to_capital.items()}
+>>> capital_to_country
+{'Brazilia': 'Brazil', 'London': 'United Kingdom', 'Stockholm': 'Sweden', 'Rabat': 'Morocoo'}
+```
+
+Note that dictionary comprehensions do not usually operate directly on dictionary sources because that yields only the keys.
+To get access to both keys and values, use dictionary's `items()` method together with tuple unpacking, as shown above.
+
+If comprehension produces duplicate keys, later keys will overwrite earlier keys. For example, map first letter of each word to the word:
+
+```python
+>>> words = ["hi", "hello", "foxtrot", "hotel"]
+>>> word_map = {word[0] : word for word in words}
+{'h': 'hotel', 'f': 'foxtrot'}
+```
+
+Left at 1:14
