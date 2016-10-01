@@ -54,6 +54,8 @@
     - [Re-Raising Exceptions](#re-raising-exceptions)
     - [Exceptions as APIs](#exceptions-as-apis)
     - [Exceptions,APIS, and Protocols](#exceptionsapis-and-protocols)
+    - [EAFP vs LBYL](#eafp-vs-lbyl)
+    - [Clean-Up Actions](#clean-up-actions)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1749,4 +1751,137 @@ def convert_raise(s):
 
 ### Exceptions,APIS, and Protocols
 
-Exceptions areparts of families of related functions referred to as "protocols".
+Exceptions are parts of families of related functions referred to as "protocols".
+
+For example, objects that implement `sequence` protocol raise `IndexError` exception for indicies which are out of range.
+
+Exceptions that a function raise are part of its specification, just like the arguments it accepts, so they should be implemented and documented.
+
+Recommend to use common/existing exception types when possible, rather than creating your own. Example, `IndexError`, `KeyError`, `ValueError`, `TypeError`.
+
+__Index Error__ Raised when integer index is out of range. For example, indexing past end of list:
+
+```python
+>>> z = [1, 4, 2]
+>>> z[3]
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+IndexError: list index out of range
+```
+
+__Value Error__ Raised when object is of the right type but contains an inappropriate value. For example, construct an int from non-numeric string:
+
+```python
+>>> int("jim")
+raceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ValueError: invalid literal for int() with base 10: 'jim'
+```
+
+**Key Error** Raised when lookup in a mapping fails. For example, lookup a non-existing key in a dictionary:
+
+```python
+>>> codes = dict(gb=44, us=1, no=47, fr=33, es=34)
+>>> codes['de']
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+KeyError: 'de'
+```
+
+**Do Not Guard Against Type Errors** Because this runs against dynamic typing and limits re-use potential of code. It's generally not worth the trouble, just let it fail.
+
+### EAFP vs LBYL
+
+The two different approaches to dealing with a program that might fail:
+
+1. **LBYL: Look Before You Leap** Check all preconditions are met in advance of attempting an error-prone operation.
+1. **EAFP: It's Easier to Ask Forgiveness than Permission** Blindly hope for the best but be prepared to deal with the consequences if something goes wrong.
+
+Python favours EAFP because puts primary logic of happy path in its most readable form. With deviations from the normal flow handled separately rather than interspersed with the main flow.
+
+For example, open a file and read some data from it, first the LBYL approach:
+
+```python
+import os
+
+p = '/path/to/datafile.dat'
+
+if os.path.exists(p):
+  process_file(p)
+else:
+  print('No such file as {}'.format(p))
+```
+
+Problems: Only checking for existence, could have other problems like file exists but contains garbage, or the path could be a directory. So need to complicate the code further by checking for all of these.
+
+A more subtle problem is race condition, it's possible for file to be deleted by another process after the existence check, but before `process_file(p)` is executed. Which means will still need error handling code for process_file.
+
+EAFP approach is simpler, just attempt the operation without any advance checks, and handle any errors that may result:
+
+```python
+import os
+
+p = 'path/to/datafile.dat'
+
+try:
+  process_file(f)
+except OSError as e:
+  print('Could not process file because {}'.format(str(e)))
+```
+
+### Clean-Up Actions
+
+Use `try... finally` to run code such as cleanup, regardless of whether an exception occurred or not.
+
+For example, a function that changes cwd, creates a new dir at that location, then restores to the original directory:
+
+```python
+import os
+
+def make_at(path, dir_name):
+  original_path = os.getcwd()
+  os.chdir(path)
+  os.mkdir(dir_name)
+  os.chdir(original_path)
+```
+
+If `os.mkdir` fails, then line that restores to original cwd will never run, resulting in an unintended side-effect (leaving the process at a different location from where it started).
+
+Use `finally` to run `chdir` no matter what happens:
+
+```python
+import os
+
+def make_at(path, dir_name):
+  original_path = os.getcwd()
+  try:
+    os.chdir(path)
+    os.mkdir(dir_name)
+  finally:
+    os.chdir(original_path)
+```
+
+Can also combine `finally` with `except`. Finally block will run even if OSError is thrown and handled.
+
+```python
+import os
+
+def make_at(path, dir_name):
+  original_path = os.getcwd()
+  try:
+    os.chdir(path)
+    os.mkdir(dir_name)
+  except OSError as e:
+    print(e, file=sys.stderr)
+    raise
+  finally:
+    os.chdir(original_path)
+    ```
+
+Errors should never pass silently, unless explicitly silenced.
+
+### Platform-Specific Code
+
+Detecting a single keypress from python (such as press any key), reuires operating-system specific modules. Can't use built in `input` function because that waits for user to press Return key before returning a string.
+
+In Windows use `msvcrt` (Microsoft Visual C Runtime). On Linux and OSX, use `sys`, `tty`, `termios`. [Example](code/keypress.py)
