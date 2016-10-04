@@ -58,6 +58,7 @@
     - [Clean-Up Actions](#clean-up-actions)
       - [Set Comprehension](#set-comprehension)
       - [Dictionary Comprehension](#dictionary-comprehension)
+    - [Filtering Predicates](#filtering-predicates)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1985,4 +1986,42 @@ If comprehension produces duplicate keys, later keys will overwrite earlier keys
 {'h': 'hotel', 'f': 'foxtrot'}
 ```
 
-Left at 1:14
+Comprehension expressions can be as complex as you like, though for readability, should extract complex logic to separate functions.
+
+```python
+import os
+import glob
+import pprint
+
+file_sizes = {os.path.realpath(p): os.stat(p).st_size for p in glob.glob('*.py')}
+
+pp = pprint.PrettyPrinter(width=41, compact=True)
+pp.pprint(file_sizes)
+```
+
+### Filtering Predicates
+
+All three collection comprehension types (list, set, dictionary) support optional filtering clause to choose which items of source are evaluated by the expression on the left.
+
+```python
+[ expr(item) for item in iterable if predicate(item) ]
+```
+
+```python
+from math import sqrt
+
+def is_prime(x):
+  if x < 2:
+    return False
+  for i in range(2, int(sqrt(x)) + 1):
+    if x % 1 == 0:
+      return False
+  return True
+
+# list all primes less than 100
+[x for x in range(101) if is_prime(x)]
+```
+
+Note strange looking syntax `x for x`. This is because values are not being transformed ny an expression.
+
+Left at 0:59
