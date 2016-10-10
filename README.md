@@ -60,6 +60,7 @@
       - [Dictionary Comprehension](#dictionary-comprehension)
     - [Filtering Predicates](#filtering-predicates)
     - [Iteration Protocols](#iteration-protocols)
+    - [Generators](#generators)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -2034,3 +2035,68 @@ prime_square_divisors = {x*x:(1, x, x*x) for x in range(101) if is_prime(x)}
 ```
 
 ### Iteration Protocols
+
+Comprehensions and for loops iterate over the entire sequence  by default, but sometimes, require more fine grained control. Two important concepts to understand wrt iteration:
+
+**Iterable protocol**
+
+Allows for passing an *iterable object* (usually collection or stream of objects such as list) to the built-in `iter()` function to get an iterator for the iterable object:
+
+```python
+iterator = iter(iterable)
+```
+
+**Iterator protocol**
+
+Iterator objects support the *iterator protocol*, which requires that the iterator object can be passed to the built-in `next()` function to fetch the next iterm:
+
+```python
+item = next(iterator)
+```
+
+Example - each call to `next` moves the iterator through the sequence. If you try and go past end of sequence, Python raises an exception of type `StopIteration`.
+
+```python
+>>> seasons = ['Spring', 'Summer', 'Autumn', 'Winter']
+>>> iterator = iter(seasons)
+>>> next(iterator)
+'Spring'
+>>> next(iterator)
+'Summer'
+>>> next(iterator)
+'Autumn'
+>>> next(iterator)
+'Winter'
+>>> next(iterator)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+StopIteration
+```
+
+Example use of iterator to build utility to return first item in series, works on any iterable object like list, set:
+
+```python
+def first(iterable):
+    """Return first item in series or raises a ValueError if series is empty"""
+    iterator = iter(iterable)
+    try:
+        return next(iterator)
+    except StopIteration:
+        raise ValueError("iterable is empty")
+
+>>> first(['first', 'second', 'third'])
+'first'
+>>> first({'first', 'second', 'third'})
+'first'
+>>> first(set())
+Traceback (most recent call last):
+  File "iter-util.py", line 11, in <module>
+    first(set())
+  File "iter-util.py", line 7, in first
+    raise ValueError("iterable is empty")
+ValueError: iterable is empty
+```
+
+Higher level constructs such as for loops and comprehensions are built on iterators.
+
+### Generators
