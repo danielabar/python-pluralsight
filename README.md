@@ -56,11 +56,20 @@
     - [Exceptions,APIS, and Protocols](#exceptionsapis-and-protocols)
     - [EAFP vs LBYL](#eafp-vs-lbyl)
     - [Clean-Up Actions](#clean-up-actions)
+    - [Platform-Specific Code](#platform-specific-code)
+  - [Iterables](#iterables)
+    - [Comprehensions](#comprehensions)
+      - [List Comprehension](#list-comprehension)
       - [Set Comprehension](#set-comprehension)
       - [Dictionary Comprehension](#dictionary-comprehension)
     - [Filtering Predicates](#filtering-predicates)
     - [Iteration Protocols](#iteration-protocols)
     - [Generators](#generators)
+    - [Stateful Generator Functions](#stateful-generator-functions)
+    - [Laziness and the Infinite](#laziness-and-the-infinite)
+    - [Generator Comprehensions](#generator-comprehensions)
+    - [Batteries Included for Iteration](#batteries-included-for-iteration)
+  - [Classes](#classes)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1881,17 +1890,22 @@ def make_at(path, dir_name):
     raise
   finally:
     os.chdir(original_path)
-    ```
+```
 
 Errors should never pass silently, unless explicitly silenced.
 
 ### Platform-Specific Code
 
+[Example](code/keypress.py)
+
 Detecting a single keypress from python (such as press any key), reuires operating-system specific modules. Can't use built in `input` function because that waits for user to press Return key before returning a string.
 
-In Windows use `msvcrt` (Microsoft Visual C Runtime). On Linux and OSX, use `sys`, `tty`, `termios`. [Example](code/keypress.py)
+In Windows use `msvcrt` (Microsoft Visual C Runtime). On Linux and OSX, use `sys`, `tty`, `termios`.
+
 
 ## Iterables
+
+Test some text here...
 
 ### Comprehensions
 
@@ -2016,7 +2030,7 @@ def is_prime(x):
   if x < 2:
     return False
   for i in range(2, int(sqrt(x)) + 1):
-    if x % 1 == 0:
+    if x % i == 0:
       return False
   return True
 
@@ -2100,3 +2114,317 @@ ValueError: iterable is empty
 Higher level constructs such as for loops and comprehensions are built on iterators.
 
 ### Generators
+
+A means to describe iterable sequences with code in functions. All generators are iterators.
+
+Sequences are lazily evaluated, the next value in the sequence is computed on demand.
+
+Lazy evaluation means we can model infinite sequences such as data streams from a sensor or an active log file.
+
+Generator functions are composable into pipelines, for natural stream processing.
+
+Generators are defined by any function that contains the `yield` keyword at least once. They may also contain the `return` keyword and no arguments. Like all functions, there's an implicit return at the end.
+
+```python
+def gen123():
+  yield 1
+  yield 2
+  yield 3
+
+>>> g = gen123()
+>>> g
+<generator object gen123 at 0x10a37bbf8>
+>>>
+>>> next(g)
+1
+>>> next(g)
+2
+>>> next(g)
+3
+>>> next(g)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+StopIteration
+>>>
+>>> for v in gen123():
+...   print(v)
+...
+1
+2
+3
+```
+
+In the above example, `g` is a generator object. Generators are iterators, so can work with them as such to retrieve or yield successive values from the sequence. Or use them anywhere that works with iterators such as for loops.
+
+Each call to generator function returns a new generator object, therefore each instance can be advanced independently:
+
+```python
+>>> h = gen123()
+>>> i = gen123()
+>>> h
+<generator object gen123 at 0x10a37bc50>
+>>> i
+<generator object gen123 at 0x10a37bca8>
+>>> next(h)
+1
+>>> next(h)
+2
+>>> next(i)
+1
+```
+
+To understand how and when generators function:
+
+```python
+>>> def gen246():
+...   print("About to yield 2")
+...   yield 2
+...   print("About to yield 4")
+...   yield 4
+...   print("About to yield 6")
+...   yield 6
+...   print("About to return")
+...
+g = gen246()
+>>> next(g)
+About to yield 2
+2
+>>> next(g)
+About to yield 4
+4
+>>> next(g)
+About to yield 6
+6
+>>> next(g)
+About to return
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+StopIteration
+```
+
+Note that calling it `g = gen246()` generator object has been created and returned but none of the code in the generator body has yet been executed.
+
+Then calling `next(g)` code runs just up until the first `yield` statement. Calling `next(g)` again, generator will *resume* execution where it left off and run again until next `yield` statement.
+
+After the final `yield` has been executed, next call to `next(g)` causes function to execute until `return` at end of function body.
+
+### Stateful Generator Functions
+
+* Generators resume execution
+* Can maintain state in local variables
+* Complex control flow
+* Lazy evaluation
+
+[Example](code/gen-examples.py)
+
+Advantage of interleaved approach (see `run_pipeline() function in example`) is `distinct` needs to only do just enough work to yield first 3 distinct values, and not have to process it's entire source list; it pays to be lazy!
+
+### Laziness and the Infinite
+
+* Just in Time Computation: computation is only run when the next result is requested
+* Generators can be used to model infinite sequences, no data structure needs to be built to contain the entire sequence.
+
+Example, [Lucas series](https://en.wikipedia.org/wiki/Lucas_number), which starts with 2 and 1. Each value after that is the sum of the preceding two values.
+
+```python
+def lucas():
+  yield 2
+  a = 2
+  b = 1
+  while True:
+    yield b
+    # update a and b to hold the new previous two values (uses tuple unpacking)
+    a, b = b, a + b
+```
+
+[Sample usage](code/gen-lazy.py)
+
+### Generator Comprehensions
+
+Generator expressions are a cross between comprehensions and generator functions. Use similar syntax to list comprehensions, but result in creation of a generator object, which produces the specified sequence lazily.
+
+ ```python
+ # Note the use of outer parentheses instead of brackets
+(expr(item) for item in iterable)
+ ```
+
+Useful when want lazy evaluation of generators with declarative precision of comprehensions.
+
+For example, this generator expression yield a list of the first million square numbers.
+
+```python
+>>> million_squares = (x*x for x in range(1, 1000001))
+>>> million_squares
+```
+
+After the above line is executed, none of the million squares has been created. `million_squares` is a generator object that captures the specification of the sequence.
+
+To force evaluation of the generator, use it to create a list:
+
+```python
+>>> list(million_squares)
+[1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225, 256, 289, 324, 361, 400, 441, 484, 529, 576, 625, 676, 729, 784, 841, 900, 961, 1024, 1089, 1156, 1225, 1296, 1369, 1444...
+```
+
+Since generator object is an iterator, once exhaused by above call, will yield no more items, i.e generators are single use objects.
+
+```python
+>>> list(million_squares)
+[]
+```
+
+Each time a generator *function* is invoked, it returns a new generator *object*. To recreate a generator from a generator comprehension, must execute it again.
+
+Compute sum of first 10 million squares using built-in `sum` function, which accepts an iterable series of numbers. If were using list comphrenesion, would consume ~400MB memory, but using generator comprehension results in insignificant memory usage.
+
+```python
+>>> sum(x*x for x in range(1, 10000001))
+333333383333335000000
+```
+
+In the example above, did not supply additional parentheses for generator function (in addition to those needed by sum function). i.e. parentheses used for `sum` function can also serve as those used by generator comprehension. They can be included but not required.
+
+Can also use if clause, for example, to compute sum of numbers from 0 to 1000, but only those that are prime:
+
+```python
+>>> sum(x for x in range(1001) if is_prime(x))
+76127
+```
+
+### Batteries Included for Iteration
+
+Python provides some built-in functions for performing common iterator operations, such as `enumerate` for producing integer indicies, and `sum` to sum numbers.
+
+In addition to built-in functions, [itertools](https://docs.python.org/3.6/library/itertools.html) module contains additional functions and generators for procesing iterable streams of data.
+
+`islice` performs lazy list slicing.
+
+`count` is an open ended range.
+
+```python
+>>> from itertools import islice, count
+>>>
+>>> thousand_primes = islice((x for x in count() if is_prime(x )), 1000)
+>>> thousand_primes
+<itertools.islice object at 0x10b224e58>
+>>> list(thousand_primes)
+2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181...
+>>>
+sum(islice((x for x in count() if is_prime(x )), 1000))
+3682913
+```
+
+Two more useful built-in functions for iterator operations are `any` and `all`. Equivalent to logical operators and and or, but for iterable series of booleans.
+
+```python
+>>> any([False, False, True])
+True
+>>> all([False, False, True])
+False
+>>> all([True, True, True])
+True
+```
+
+Use `any` together with generator to determine if there are any primes in a range:
+
+```python
+>>> any(is_prime(x) for x in range(1328, 1361))
+False
+```
+
+Check that all the given city names are proper nouns with initial upper case letters:
+
+```python
+>>> all(name == name.title() for name in ['London', 'New York', 'Sydney'])
+True
+```
+
+Last built-in for iterator operations is `zip`, used to synchronize iterations over two iterable series. For example, combine two columns of temperature data into pairs of corresponding readings:
+
+```python
+>>> sunday = [12, 14, 15, 15, 17, 21, 22, 22, 23, 22, 20, 18]
+>>> monday = [13, 14, 14, 14, 16, 20, 21, 22, 22, 21, 19, 17]
+>>>
+>>> for item in zip(sunday, monday):
+...   print(item)
+...
+(12, 13)
+(14, 14)
+(15, 14)
+(15, 14)
+(17, 16)
+(21, 20)
+(22, 21)
+(22, 22)
+(23, 22)
+(22, 21)
+(20, 19)
+(18, 17)
+```
+
+`zip` yields tuples when iterating, so it can be used together with tuple unpacking in a for loop:
+
+```python
+>>> for sun, mon in zip(sunday, monday):
+...   print("average = ", (sun + mon) / 2)
+...
+average =  12.5
+average =  14.0
+average =  14.5
+average =  14.5
+average =  16.5
+average =  20.5
+average =  21.5
+average =  22.0
+average =  22.5
+average =  21.5
+average =  19.5
+average =  17.5
+```
+
+`zip` can accept *any* number of iterable arguments:
+
+```python
+>>> tuesday = [2, 2, 3, 7, 9, 10, 11, 12, 10, 9, 8, 8]
+>>> for temps in zip(sunday, monday, tuesday):
+...   print("min={:4.1f}, max={:4.1f}, average={:4.1f}".format(min(temps), max(temps), sum(temps), sum(temps) / len(temps)))
+```
+
+To get one long temperature series for all three days, use `chain` to lazily concatenate tuples, which is different from simply concatenating several lists into one new list:
+
+```python
+>>> from itertools import chain
+>>> temperatures = chain(sunday, monday, tuesday)
+>>> # check all temps above freezing point without memory impact of data duplication
+>>> all(t > 0 for t in temperatures )
+True
+```
+
+Putting it all together, demonstrate composability of generator functions, generator expressions, pure predicate functions and for loops:
+
+```python
+>>> for x in (p for p in lucas() if is_prime(p)):
+...   print(x)
+...
+2
+3
+7
+11
+29
+47
+199
+521
+2207
+3571
+9349
+3010349
+54018521
+370248451
+6643838879
+119218851371
+5600748293801
+688846502588399
+...
+```
+
+## Classes
