@@ -59,6 +59,7 @@
       - [Set Comprehension](#set-comprehension)
       - [Dictionary Comprehension](#dictionary-comprehension)
     - [Filtering Predicates](#filtering-predicates)
+    - [Iteration Protocols](#iteration-protocols)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1893,7 +1894,7 @@ In Windows use `msvcrt` (Microsoft Visual C Runtime). On Linux and OSX, use `sys
 
 ### Comprehensions
 
-A concise syntax for describing lists, sets or dictionaries in a declarative or functional style. Resulting shorthand is readable and expressive.
+A concise syntax for describing lists, sets or dictionaries in a declarative or functional style. Resulting shorthand is readable and expressive. Should be purely functional, i.e. no side effects.
 
 #### List Comprehension
 
@@ -2022,6 +2023,14 @@ def is_prime(x):
 [x for x in range(101) if is_prime(x)]
 ```
 
-Note strange looking syntax `x for x`. This is because values are not being transformed ny an expression.
+The above example demonstrates `is_prime` function being used as a filtering clause of a list comprehension.
 
-Left at 0:59
+Note strange looking syntax `x for x`. This is because values are not being transformed by an expression. The expression in terms of `x` is `x` itself.
+
+Filter predicate and transforming expression can be combined. For example, a dictionary comprehension that maps numbers with exactly 3 divisors to a tuple of those divisors
+
+```python
+prime_square_divisors = {x*x:(1, x, x*x) for x in range(101) if is_prime(x)}
+```
+
+### Iteration Protocols
