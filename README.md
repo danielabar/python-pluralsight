@@ -70,6 +70,11 @@
     - [Generator Comprehensions](#generator-comprehensions)
     - [Batteries Included for Iteration](#batteries-included-for-iteration)
   - [Classes](#classes)
+    - [Defining Classes](#defining-classes)
+    - [Instance Methods](#instance-methods)
+    - [Initializers](#initializers)
+    - [Class Invariants](#class-invariants)
+    - [Collaboaring Classes](#collaboaring-classes)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -739,7 +744,7 @@ Python idiom for swapping two or more variables:
 >>> b # 'jelly'
 ```
 
-To create a tuple from an exising collection object such as list, use constructor `tuple(iterable)`
+To create a tuple from an existing collection object such as list, use constructor `tuple(iterable)`
 
 `in` operator to test for containment
 
@@ -857,7 +862,7 @@ for i in range(5):
   print(i)  # 0 1 2 3 4
 ```
 
-Can also supply a start value `range(5, 10)` - 5 6 7 8 9. Common usage is to pass this to lsit constructor `list(range(5, 10))` - [5, 6, 7, 8, 9].
+Can also supply a start value `range(5, 10)` - 5 6 7 8 9. Common usage is to pass this to list constructor `list(range(5, 10))` - [5, 6, 7, 8, 9].
 
 Step argument controls interval between successive numbers `list(range(0, 10, 2))` - [0, 2, 4, 6, 8]. In this case, must supply all three arguments (start, stop, step).
 
@@ -907,7 +912,7 @@ Lists and other sequences such as tuples can also be indexed from the end, using
 'show', 'how', 'to', 'index', 'into', 'sequences']
 >>> s[4] # extracts 5th element
 'into'
->>> s[-5] # extracts 5th element fron the end
+>>> s[-5] # extracts 5th element from the end
 'how'
 >>> s[-1] # last element of sequence, more elegant than length-1 solution
 'Sequences'
@@ -1905,8 +1910,6 @@ In Windows use `msvcrt` (Microsoft Visual C Runtime). On Linux and OSX, use `sys
 
 ## Iterables
 
-Test some text here...
-
 ### Comprehensions
 
 A concise syntax for describing lists, sets or dictionaries in a declarative or functional style. Resulting shorthand is readable and expressive. Should be purely functional, i.e. no side effects.
@@ -2428,3 +2431,104 @@ Putting it all together, demonstrate composability of generator functions, gener
 ```
 
 ## Classes
+
+Ability to create custom types, because sometimes Python's built-in types are not enough to solve the problem.
+Classes define structure adn behaviour of objects. An object's class controls its initialization.
+
+Classes make complex problems tractable, but can alsomake simple solutions overly complex. Python is OO but doesn't force you to use classes until you need it.
+
+### Defining Classes
+
+`class` keyword to define new classes. By convention, class names use `CamelCase`.
+
+Just like `def`, `class` is a statement that can occur anywhere in a program. It binds a class definition to a class name.
+
+[Example](code/classes/airtravel.py)
+
+Import the class object in the repl:
+
+```python
+>>> from airtravel import Flight
+>>> Flight
+<class 'airtravel.Flight'>
+```
+
+To use the class, call the class, which is called just like any other function. Constructor returns a new object, which is assigned here to name `f`.
+
+```python
+f = Flight()
+>>> type(f)
+<class 'airtravel.Flight'>
+```
+
+### Instance Methods
+
+**Method** Function defined within a class.
+
+**Instance methods** Functions which can be called on objects.
+
+**self** First argument to instance methods.
+
+```python
+>>> f = Flight()
+>>> f.number()
+```
+
+Note that we don't provide `f` as argument to `number` method. Because its syntactic sugar for `Flight.number(f)`.
+
+### Initializers
+
+If provided, `__init__()` method is called as part of creating a new object. It must be named with the double underscores. First argument to init is `self`. Initializer does not return anything, it just modifies the object referred to by self.
+
+`__init__` is an *initializer*, not a *constructor*. It's purpose is to configure an object that already exists by the time its called. The constructor is provided by the Python runtime system, which checksk for presence of initializer and calls it if present.
+
+`self` is similar to `this` in Java.
+
+Example initializer:
+
+```python
+class Flight:
+
+  def __init__(self, number):
+    # assigning to attribute that doesn't yet exist brings it into being
+    self._number = number
+
+  def number(self):
+    return self._number;
+```
+
+Note use of `_number`, to avoid name clash with `number()` method. (methods are functions, functions are objects, these functions are bound to attributes of the object). Also by convention, implementation details not intended for public use start with underscore.
+
+Arguments passed to constructor will be forwarded to initializer:
+
+```python
+>>> >>> f = Flight('SN060')
+>>> f.number()
+'SN060'
+```
+
+### Class Invariants
+
+Truths about an object that endure for its lifetime. For example, flight number must always start with two letter uppercase airline code followed by three digit route number.
+
+Class invariants are defined in the init method and raise exceptions if they are not satisfied.
+
+Can use keyword arguments when passing many values to a constructor, to make the code self documenting:
+
+```python
+a = Aircraft("G-EUPT", "Airbus A319", num_rows=22, num_seats_per_row=6)
+```
+
+### Collaboaring Classes
+
+**Law of Demeter** The principle of least knowledge. Only talk to your friends.
+
+OOP principle to never call methods on objects you receive from other calls.
+
+Now that the Flight class takes an instance of an Aircraft:
+
+```python
+>>> f = Flight("BA758", Aircraft("G-EUPT", "Airbus A319", num_rows=22, num_seats_per_row=6))
+```
+
+Left at start of Defining Implementation Details
