@@ -1,5 +1,7 @@
 """Model for aircraft flights"""
 
+from pprint import pprint as pp
+
 
 class Flight:
     """A flight with a particular passenger aircraft."""
@@ -82,7 +84,7 @@ class Flight:
             raise ValueError("Seat {} already occupied".format(seat))
 
         self._seating[row][letter] = passenger
-        print("Passenger {} allocated to seat {}".format(passenger, seat))
+        # print("Passenger {} allocated to seat {}".format(passenger, seat))
 
     def relocate_passenter(self, from_seat, to_seat):
         """Relocate a passenger to a different seat.
@@ -104,43 +106,92 @@ class Flight:
         self._seating[from_row][from_letter] = None
         print("Passenger {} relocated from seat {} to seat {}".format(self._seating[to_row][to_letter], from_seat, to_seat))
 
+    # two nested generator expressions:
+    # Outer: filters for all rows which are not None (exclude dummy first row)
+    # Value of each item in outer expression is sum number of None values in each row
+    # Inner expression iterates over values of dictionary and adds 1 for each None found
     def num_available_seats(self):
-        return sum(sum(1 for s in row, values() if s is None)
-                    for row in self._seating
-                    if row is not None)
+        return sum(sum(1 for s in row.values() if s is None) for row in self._seating if row is not None)
+
+    def make_boarding_cards(self, card_printer):
+        for passenger, seat in sorted(self._passenger_seats()):
+            card_printer(passenger, seat, self.number(), self.aircraft_model())
+
+    def _passenger_seats(self):
+        """An iterable series of passenger seating allocations."""
+        row_numbers, seat_letters = self._aircraft.seating_plan()
+        for row in row_numbers:
+            for letter in seat_letters:
+                passenger = self._seating[row][letter]
+                if passenger is not None:
+                    yield(passenger, "{}{}".format(row, letter))
 
 
 class Aircraft:
 
-    def __init__(self, registration, model, num_rows, num_seats_per_row):
+    def __init__(self, registration):
         self._registration = registration
-        self._model = model
-        self._num_rows = num_rows
-        self._num_seats_per_row = num_seats_per_row
 
     def registration(self):
         return self._registration
 
+    def num_seats(self):
+        rows, row_seats = self.seating_plan()
+        return len(rows) * len(row_seats)
+
+
+class AirbusA319(Aircraft):
+
     def model(self):
-        return self._model
+        return "Airbus A319"
 
-    # return allowed rows and seats as tuple containing range object and a string of seat letters
     def seating_plan(self):
-        return (range(1, self._num_rows + 1), 'ABCDEFGHJK'[:self._num_seats_per_row])
+        return range(1, 23), "ABCDEF"
 
 
-# module level convenience
-def make_flight():
-    f = Flight("BA7588", Aircraft("G-EUPT", "Airbus A319", num_rows=22, num_seats_per_row=6))
+class Boeing777(Aircraft):
+
+    def model(self):
+        return "Boeing 777"
+
+    def seating_plan(self):
+        # For simplicity, ignore complex seating arrangement in first-class
+        return range(1, 56), "ABCDEFHJK"
+
+
+# module level functions
+def make_flights():
+    f = Flight("BA758", AirbusA319("G-EUPT"))
+    print("Number of available seats on flight {} is {}".format(f.number(), f._aircraft.num_seats()))
     f.allocate_seat("12A", "Guido van Rossum")
     f.allocate_seat("15F", "Bjarne Stroustrup")
     f.allocate_seat("15E", "Anders Hejlsberg")
     f.allocate_seat("1C", "John McCarthy")
     f.allocate_seat("1D", "Richard Hickey")
+    f.make_boarding_cards(console_card_printer)
 
-    f.relocate_passenter("12A", "15A")
-    f.relocate_passenter("1D", "1C")
-    return f
+    g = Flight("AF72", Boeing777("F-GSPS"))
+    print("Number of available seats on flight {} is {}".format(g.number(), g._aircraft.num_seats()))
+    g.allocate_seat("55K", "Larry Wall")
+    g.allocate_seat("33J", "Yukihiro Matsumoto")
+    g.allocate_seat("4B", "Brian Kernigham")
+    g.allocate_seat("4A", "Dennis Ritchie")
+    g.make_boarding_cards(console_card_printer)
+
+
+def console_card_printer(passenger, flight_number, seat, aircraft):
+    output = "| Name: {0}"     \
+              "  Flight: {1}"   \
+              "  Seat: {2}"     \
+              "  Aircraft: {3}" \
+              " |".format(passenger, flight_number, seat, aircraft)
+    banner = "+" + "-" * (len(output) - 2) + '+'
+    border = '|' + ' ' * (len(output) - 2) + '|'
+    lines = [banner, border, output, border, banner]
+    card = "\n".join(lines)
+    print(card)
+    print()
+
 
 if __name__ == "__main__":
-    make_flight()
+    make_flights()

@@ -75,6 +75,9 @@
     - [Initializers](#initializers)
     - [Class Invariants](#class-invariants)
     - [Collaboaring Classes](#collaboaring-classes)
+    - [Polymorphism and Duck Typing](#polymorphism-and-duck-typing)
+    - [Inheritance and Implementation Sharing](#inheritance-and-implementation-sharing)
+  - [Files and Resource Management](#files-and-resource-management)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -2531,4 +2534,71 @@ Now that the Flight class takes an instance of an Aircraft:
 >>> f = Flight("BA758", Aircraft("G-EUPT", "Airbus A319", num_rows=22, num_seats_per_row=6))
 ```
 
-Left at start of Defining Implementation Details
+Note in air travel class example, will add boarding pass printer as function, don't create a new class unless there's a good reason to.
+
+### Polymorphism and Duck Typing
+
+Using objects of *different types* through a *common interface*. Applies to functions and complex objects.
+
+For example, `make_boarding_cards` method does not need to know concrete card printing type, only the abstract details of its interface, i.e just the order of its arguments. We could replace `console_card_printer` with `html_card_printer`, this is polymorphism.
+
+Polymorphism in Python is achieved via **Duck Typing** "When I see a bird that walks like a duck, swims like a duck and quacks like a duck, I call that bird a duck" -James Whitcomb Riley. An objects fitness for use is determined at the *time of use*. An objects suitability for use is not based on inheritance or hierarchy (unlike statically typed languages), but only on the attributes the object has at the time of use.
+
+```python
+class Flight:
+  ...
+  def make_boarding_cards(self, card_printer):
+        for passenger, seat in sorted(self._passenger_seats()):
+            card_printer(passenger, seat, self.number(), self.aircraft_model())
+
+...
+# module level function
+def console_card_printer(passenger, flight_number, seat, aircraft):
+    output = "| Name: {0}"     \
+              "  Flight: {1}"   \
+              "  Seat: {2}"     \
+              "  Aircraft: {3}" \
+              " |".format(passenger, flight_number, seat, aircraft)
+    banner = "+" + "-" * (len(output) - 2) + '+'
+    border = '|' + ' ' * (len(output) - 2) + '|'
+    lines = [banner, border, output, border, banner]
+    card = "\n".join(lines)
+    print(card)
+    print()
+
+...
+
+# Usage
+f = Flight("BA7588", Aircraft("G-EUPT", "Airbus A319", num_rows=22, num_seats_per_row=6))
+f.allocate_seat("12A", "Guido van Rossum")
+f.allocate_seat("15F", "Bjarne Stroustrup")
+f.make_boarding_cards(console_card_printer)
+```
+
+Duck typing is basis for collection protocols.
+
+### Inheritance and Implementation Sharing
+
+Mechanism whereby one class can be derived from base class, to allow behaviour to be made more specific in sub-class. In Java, this is required to achieve run-time polymorphism, but not so Python because it uses *Late binding* - no attribute calls or method lookups are bound to actual objects until the point at which they are called.
+
+Inheritance is most useful for sharing *implementation* between classes. Specified with parentheses following class name:
+
+```python
+class Aircraft:
+
+    def num_seats(self):
+        rows, row_seats = self.seating_plan()
+        return len(rows) * len(row_seats)
+
+
+class AirbusA319(Aircraft):
+
+  def seating_plan(self):
+        return range(1, 23), "ABCDEF"
+
+  ...
+```
+
+Inheritance creates very tight coupling between classes. Thanks to duck typing, it is not needed as often in Python.
+
+## Files and Resource Management
