@@ -2602,3 +2602,17 @@ class AirbusA319(Aircraft):
 Inheritance creates very tight coupling between classes. Thanks to duck typing, it is not needed as often in Python.
 
 ## Files and Resource Management
+
+`open()` to open a file, most common arguments are:
+
+* `file` path to file (required)
+* `mode` read/write/append, binary/text (optional but recommend specifying for clarity)
+* `encoding` text encoding
+
+At file system level, files contain series of bytes. Python distinguishes between files open in binary and text modes.
+
+**Binary File Access**
+
+Files opened in binary mode return and manipulate their contents as `bytes` objects without any decoding, reflect raw data in the file.
+
+Left at 1:22 file intro
