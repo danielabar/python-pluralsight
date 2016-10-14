@@ -2611,8 +2611,28 @@ Inheritance creates very tight coupling between classes. Thanks to duck typing, 
 
 At file system level, files contain series of bytes. Python distinguishes between files open in binary and text modes.
 
-**Binary File Access**
-
 Files opened in binary mode return and manipulate their contents as `bytes` objects without any decoding, reflect raw data in the file.
 
-Left at 1:22 file intro
+File opened in text mode treats contents as if it contains text strings of `str` type, the raw bytes are first decoded using platform dependent encoding or using specified encoding. By default, text mode uses *universal newlines*. This translates between newline char in code `\n` and platform-dependent representation in raw bytes in file, for example `/r/n` on Windows.
+
+If no encoding specified, will use default specified by `sys` but not guaranteed to be the same on every system:
+
+```python
+>>> import sys
+>>> sys.getdefaultencoding()
+'utf-8'
+```
+
+### Writing Text Files
+
+Using keyword arguments for clarity:
+
+```python
+f = open('wasteland.txt', mode='wt', encoding='utf-8')
+```
+
+First argument is file name to be opened.
+
+`mode` argument is a string containing letters with different meanings, for example `w` for write and `t` for text.
+
+Left at 0:24 of writing text files
