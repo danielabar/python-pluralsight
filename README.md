@@ -78,6 +78,10 @@
     - [Polymorphism and Duck Typing](#polymorphism-and-duck-typing)
     - [Inheritance and Implementation Sharing](#inheritance-and-implementation-sharing)
   - [Files and Resource Management](#files-and-resource-management)
+    - [Writing Text Files](#writing-text-files)
+    - [Reading Text Files](#reading-text-files)
+    - [Appending to Text Files](#appending-to-text-files)
+    - [Files as Iterators](#files-as-iterators)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -2635,4 +2639,132 @@ First argument is file name to be opened.
 
 `mode` argument is a string containing letters with different meanings, for example `w` for write and `t` for text.
 
-Left at 0:24 of writing text files
+**`open()` modes**
+
+All mode strings must consist of read, write or append mode (r/w/a) with optional plus (+) modifier, combined with selector for text or binary mode (t/b).
+
+| Character  | Meaning  |
+|:-:|:-:|
+| r  | open for reading (default)  |
+| w  | open for writing, truncating the file first  |
+| x  | open for exclusive creation, failing if the file already exists  |
+| a  | open for writing, appending to the end of the file if it exists  |
+| b  | binary mode  |
+| t  | text mode (default)  |
+| +  | open a disk file for updating (reading and writing)  |
+| u  | universal newline modes (for backwards compatibility, should not be used in new code)  |
+
+Typical mode strings:
+
+`wb` write binary, `at` append text.
+
+Object returned from `open` is a file-like object. Can request help on instances at the repl:
+
+```python
+>>> f = open('wasteland.txt', mode='wt', encoding='utf-8')
+>>> help(f)
+...
+|  write(self, text, /)
+ |      Write string to stream.
+ |      Returns the number of characters written (which is always equal to
+ |      the length of the string).
+...
+```
+
+`write` returns number of *codepoints* written to file (not number of bytes written to file after encoding the universal newline character), because Python's universal newline behaviour translates line endings to platform's native line endings, which for example on Windows will be one extra byte vs Linux. Do not rely on sum of values returned by write to be the size of the file in bytes.
+
+Caller is responsible for providing newline characters:
+
+```python
+>>> f.write('What are the roots that clutch, ')
+32
+>>> f.write('what branches grow\n')
+19
+>>> f.write('Out of this stony rubbish? ')
+27
+```
+
+When finished writing, must close file with `close()` method:
+
+```python
+>>> f.close()
+```
+
+Content only becomes visible in the file after `close` is called.
+
+### Reading Text Files
+
+Use `open` function with mode string for reading like `rt` (read text):
+
+```python
+>>> g = open('wasteland.txt', mode='rt', encoding='utf-8')
+```
+
+To read in a specific number of characters (in text mode, read method expects number of characters to read in from the file):
+
+```python
+>>> g.read(32)
+'What are the roots that clutch, '
+```
+
+`read` returns the text and advances file pointer to end of what was read. Return type is `str` when file opened in text mode.
+
+To read all/remaining data, call `file()` with no arguments:
+
+```python
+>>> g.read()
+'what branches grow\nOut of this stony rubbish? '
+```
+
+Calling `read()` after end of file has been reached returns an empty string `''`.
+
+When finished reading a file, remember to `close()` it.
+
+If not closed, can use `seek` to move file pointer, passing in offset, returns new file pointer position:
+
+```python
+>>> f.seek(0)
+0
+```
+
+`read` for text files is awkward. Python has better tools for reading a file line by line.
+
+`readline()` returns lines terminated by new line character, if present in file. After end of file is reached, calling `readline()` returns empty string.
+
+```python
+>>> g.readline()
+'What are the roots that clutch, what branches grow\n'
+>>> g.readline()
+'Out of this stony rubbish? '
+>>> g.readline()
+''
+>>> g.seek(0)
+''
+```
+
+To read *all* lines in file to a list (make sure there's enough memory):
+
+```python
+>>> g.readlines()
+['What are the roots that clutch, what branches grow\n', 'Out of this stony rubbish? ']
+g.close()
+```
+
+### Appending to Text Files
+
+Use `a` mode to open file for writing, appending to end of file if it already exists.
+
+`writelines` writes an iterable series of strings to a stream (there is no writeline method). Must provide new line character if want line endings.
+
+```python
+>>> h = open('wasteland.txt', mode='at', encoding='utf-8')
+>>> h.writelines(
+...   ['Son of man,\n',
+...    'You cannot say, or guess, ',
+...    'for you know only,\n'
+...    'A heap of broken images, '
+...    'where the sun beats\n'])
+>>> h.close()
+```
+
+### Files as Iterators 
