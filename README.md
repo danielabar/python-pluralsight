@@ -2767,4 +2767,20 @@ Use `a` mode to open file for writing, appending to end of file if it already ex
 >>> h.close()
 ```
 
-### Files as Iterators 
+### Files as Iterators
+
+[Example](code/files/file_iterator.py)
+
+File objects support the iterator protocol, each iteration yields next line in file.
+
+Run example program:
+
+```shell
+$ python file_iterator.py wasteland.txt
+```
+
+Outputs each line in the provided text file double-spaced. Because the text file was written with explicit newline characters, plus `print` adds its own. Fix by using `write` method of standard out stream: `sys.stdout.write(line)`, which is the same method used to write to the file. Stream is a file-like object.
+
+### Context Managers and with-blocks
+
+Left at 0:36
