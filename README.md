@@ -82,6 +82,8 @@
     - [Reading Text Files](#reading-text-files)
     - [Appending to Text Files](#appending-to-text-files)
     - [Files as Iterators](#files-as-iterators)
+    - [Context Managers and with-blocks](#context-managers-and-with-blocks)
+    - [Binary Files](#binary-files)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -2783,4 +2785,29 @@ Outputs each line in the provided text file double-spaced. Because the text file
 
 ### Context Managers and with-blocks
 
-Left at 0:36
+Typical file use is something like:
+
+```python
+f = open()
+# work work work...
+f.close()
+```
+
+`close()` is required to actually write the data, informs the operating system that code is done working with this file. If don't close, may lose some data, may be some pending writes in the buffer that never get written to the file. Also system may run out of resources when opening lots of files. Always want to pair each file `open()` with file `close()`.
+
+**with-block**
+
+[Example](code/files/series.py)
+
+Mechanism that enforces resource clean-up-actions, even if developer forgets to do so. Can be used with any object that supports *context_manager* protocol, which includes file object returned by `open()`.
+
+No need to call file `close()` in a `finally` block because `with` construct will do that automatically when execution exits the block.
+
+Syntactic sugar for more complex try/except/finally blocks.
+
+```python
+with EXPR as VAR:
+  BLOCK
+```
+
+### Binary Files
