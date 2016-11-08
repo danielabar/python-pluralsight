@@ -83,7 +83,8 @@
     - [Appending to Text Files](#appending-to-text-files)
     - [Files as Iterators](#files-as-iterators)
     - [Context Managers and with-blocks](#context-managers-and-with-blocks)
-    - [Binary Files](#binary-files)
+  - [Shipping Working and Maintainable Code](#shipping-working-and-maintainable-code)
+    - [Unittest](#unittest)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -2810,4 +2811,16 @@ with EXPR as VAR:
   BLOCK
 ```
 
-### Binary Files
+## Shipping Working and Maintainable Code
+
+### Unittest
+
+[Example](code/unittest/text_analyzer.py)
+
+Module included with Python standard library. Framework for automated tests including unit, integration and acceptance.
+
+**TestCase** Groups together related test functions, basic unit of test organization.
+
+**Fixture** Code run before and/or after each test function. Used to ensure test environment is in expected state before a test is run, and to cleanup. Note `setUp` and `tearDown` method names not in line with PEP8 because unittest module predates PEP8 spec of function names being lowercase with underscores.
+
+**Assertions** Tell the unit test framework to run checks to assert whether test passed or failed.
