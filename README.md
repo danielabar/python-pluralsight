@@ -85,6 +85,10 @@
     - [Context Managers and with-blocks](#context-managers-and-with-blocks)
   - [Shipping Working and Maintainable Code](#shipping-working-and-maintainable-code)
     - [Unittest](#unittest)
+    - [Debugging with PDB](#debugging-with-pdb)
+    - [Virtual Environments](#virtual-environments)
+    - [Distributing Your Programs](#distributing-your-programs)
+    - [Installing Third-Party Modules](#installing-third-party-modules)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -2824,3 +2828,147 @@ Module included with Python standard library. Framework for automated tests incl
 **Fixture** Code run before and/or after each test function. Used to ensure test environment is in expected state before a test is run, and to cleanup. Note `setUp` and `tearDown` method names not in line with PEP8 because unittest module predates PEP8 spec of function names being lowercase with underscores.
 
 **Assertions** Tell the unit test framework to run checks to assert whether test passed or failed.
+
+### Debugging with PDB
+
+Python DeBugger (PDB) is a command line debugger that comes with the standard library.
+
+Not a separate program, but a module.
+
+```python
+>>> import pdb
+>>> pdb.set_trace()
+--Return--
+> <stdin>(1)<module>()->None
+(Pdb)
+```
+
+Typing `help` at the (Pdb) prompt lists all the debugger commands.
+
+To start a program in debug mode:
+
+```shell
+python -m pdb palindrome.py
+```
+
+Will display next line debugger is about to execute:
+
+```python
+> /Users/dbaron/projects/python-pluralsight/code/debug/palindrome.py(1)<module>()
+-> import unittest
+(Pdb)
+```
+
+`where` displays the current call stack.
+
+`next` executes the current command.
+
+`cont` makes program continue exeuction, `ctrl + c` will get back into debug mode if program is still running.
+
+`list` displays where in source code execution is.
+
+`return` to run to end of current function.
+
+`print(some_var)` outputs the current value of some_var variable.
+
+### Virtual Environments
+
+Lightweight self-contained Python installation that can be created without user needing admin rights on the machine.
+
+`pyvenv` is a tool that comes with Python 3.3+. To use it, specify directory to contain new virtual environment:
+
+```shell
+$ pyvenv venv3
+```
+
+pyvenv will create the directory and populate it with the installation.
+
+After the environment has been created, it can be activated. This runs the script and changes prompt to remind you you're in the virtual environment.
+
+```shell
+$ source venv3/bin/activate
+(venv3) $
+```
+
+### Distributing Your Programs
+
+[Example](code/dist_example/setup.py)
+
+Can be complex when project has many dependencies outside of the standard library.
+
+`distutils` module allows you to write a python script to install python modules into any python installation. By convention script is named `setup.py` and should exist at top level of project. Script is later executed to perform installation.
+
+To start, create a directory to contain project. Copy any code files that should be part of the installation, and create `setup.py` in this directory. For example:
+
+```shell
+dist_example
+├── palindrome.py
+└── setup.py
+```
+
+To use `setup.py`, first create a virtual environment in `dist_example`, then run the setup.
+Then switch up one directory, run python, import the newly installed module and use it.
+
+```shell
+$ pyvenv venv
+$ source venv/bin/activate
+(venv) $ python setup.py install
+unning install
+running build
+running build_py
+creating build
+creating build/lib
+copying palindrome.py -> build/lib
+running install_lib
+copying build/lib/palindrome.py -> /Users/dbaron/projects/python-pluralsight/code/dist_example/venv/lib/python3.5/site-packages
+byte-compiling /Users/dbaron/projects/python-pluralsight/code/dist_example/venv/lib/python3.5/site-packages/palindrome.py to palindrome.cpython-35.pyc
+running install_egg_info
+Writing /Users/dbaron/projects/python-pluralsight/code/dist_example/venv/lib/python3.5/site-packages/palindrome-1.0.0-py3.5.egg-info
+$ cd ..
+$ python
+>>> import palindrome
+>>> palindrome.__file__
+'/Users/dbaron/projects/python-pluralsight/code/dist_example/venv/lib/python3.5/site-packages/palindrome.py'
+>>> palindrome.is_palindrome(232)
+True
+```
+
+Setup can create different distribution formats. Create a dist dir with zip:
+
+```shell
+$ python setup.py sdist --format zip
+```
+
+To see all formats available:
+
+```shell
+$ python setup.py sdist --help-formats
+```
+
+### Installing Third-Party Modules
+
+3 popular options:
+
+* distutils
+* easy_install
+* pip
+
+**distutils** Nearly all python projects include setup.py, use it as described in previous section. (`python setup.py install`)
+
+**easy_install** and **pip** Do the same thing, search for packages in a central repository (python package index or pypi), download and install them along with their dependencies (using setup.py). Browse registry at [pypi.python.org/pypi](pypi.python.org/pypi).  Use easy_install to install pip:
+
+```shell
+$ easy_install pip
+```
+
+Use pip to install a package, for example `nose` testing tools:
+
+```shell
+$ pip install nose
+```
+
+This installs nosetests in the bin dir, to run the tests:
+
+```shell
+$ nosetests palindrome.py
+```
